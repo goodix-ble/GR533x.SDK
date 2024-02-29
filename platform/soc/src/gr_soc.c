@@ -180,10 +180,43 @@ void otp_trim_init(void)
 #endif
 }
 
+/* bug fix for #C.493 */
+
+/* digcore volt init info */
+typedef struct
+{
+    uint8_t     dcore_method;  /* enum SYS_PMU_CONFIG_DCORE_METHOD */
+    uint32_t    tt_fix_tgt_mv; /* fixed target digcore volt of TT/FF/SF/FS chip */
+    uint32_t    ss_fix_tgt_mv; /* fixed target digcore volt of SS chip */
+    uint32_t    tgt_ringo;     /* target dvs ringo for finding suitable digcore volt */
+    uint32_t    min_dcore_mv;  /* the min digcore volt for mcu work ok, in case the volt finding by ringo too low */
+}pmu_dcore_init_para_st;
+
+extern pmu_dcore_init_para_st g_pmu_dcore_init_para_64M;
+extern pmu_dcore_init_para_st g_pmu_dcore_init_para_16M;
+
 void platform_init(void)
 {
     gr5xx_fpb_init(FPB_MODE_PATCH_AND_DEBUG);
     otp_trim_init();
+
+    /* bug fix for #C.493 */
+    {
+        g_pmu_dcore_init_para_64M.dcore_method  = 2;
+        g_pmu_dcore_init_para_64M.tt_fix_tgt_mv = 950;
+        g_pmu_dcore_init_para_64M.ss_fix_tgt_mv = 1050;
+        g_pmu_dcore_init_para_64M.tgt_ringo     = 1600;
+        g_pmu_dcore_init_para_64M.min_dcore_mv  = 950;
+
+        g_pmu_dcore_init_para_16M.dcore_method  = 2;
+        g_pmu_dcore_init_para_16M.tt_fix_tgt_mv = 950;
+        g_pmu_dcore_init_para_16M.ss_fix_tgt_mv = 1050;
+        g_pmu_dcore_init_para_16M.tgt_ringo     = 1600;
+        g_pmu_dcore_init_para_16M.min_dcore_mv  = 950;
+
+        AON_CTL->MEM_MARGIN = 0xDD;
+    }
+
     first_class_task();
     second_class_task();
 }
