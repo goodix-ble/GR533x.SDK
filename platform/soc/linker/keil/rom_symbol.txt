@@ -907,3 +907,4 @@
 0x00004ecd T attmdb_svc_browse_attribute
 0x20000534 D attmdb_svc_calc_len_fp
 0x000050b5 T attmdb_svc_check_uuid_len
+0x200002cc D lld_con_frm_cbk
