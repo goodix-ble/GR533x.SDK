@@ -67,6 +67,7 @@ const APP_INFO_t BUILD_IN_APP_INFO __attribute__((section(".app_info"))) =
 #ifdef APP_INFO_COMMENTS
     .comments         = APP_INFO_COMMENTS,
 #endif
+    .reserved1        = {APP_INFO_RESERVED}
 };
 
 __WEAK void C_CONSTRUCTOR system_platform_init(void)
@@ -124,8 +125,8 @@ int __low_level_init(void)
 
 __WEAK void main_init(void)
 {
-    uint32_t boot_flag = pwr_mgmt_get_wakeup_flag();
- 
+    boot_mode_t boot_flag = pwr_mgmt_get_wakeup_flag();
+
     if(COLD_BOOT == boot_flag)
     {
         extern void __main(void);
@@ -134,6 +135,9 @@ __WEAK void main_init(void)
     else
     {
         warm_boot_process();
-        while (1);
+
+        for (;;)
+        {
+        }
     }
 }

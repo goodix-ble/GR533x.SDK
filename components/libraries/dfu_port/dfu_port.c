@@ -178,6 +178,8 @@ static uint8_t              s_fast_dfu_mode    = 0x00;
 static dfu_image_info_t     s_now_img_info;
 static dfu_enter_callback   s_dfu_enter_func = NULL;
 
+static uint8_t              s_ota_conn_index = BLE_GAP_INVALID_CONN_INDEX;
+
 #if defined(SOC_GR533X) || defined(SOC_GR5405)
 static uint32_t     page_start_addr;
 static uint32_t     *p_page_start_addr = NULL;
@@ -590,6 +592,10 @@ static void otas_evt_process(otas_evt_t *p_evt)
         return;
     }
 #endif
+    if (s_ota_conn_index != BLE_GAP_INVALID_CONN_INDEX && s_ota_conn_index != p_evt->conn_idx)
+    {
+        return;
+    }
 
     switch (p_evt->evt_type)
     {
@@ -614,7 +620,18 @@ static void otas_evt_process(otas_evt_t *p_evt)
             dfu_ble_send_data_cmpl_process();
             break;
 
+        case OTAS_EVT_DISCONNECT:
+            if (s_ota_conn_index == p_evt->conn_idx)
+            {
+                s_ota_conn_index = BLE_GAP_INVALID_CONN_INDEX;
+            }
+            break;
+
         case OTAS_EVT_DFU_TASK_ENTER:
+            if (s_ota_conn_index == BLE_GAP_INVALID_CONN_INDEX)
+            {
+                s_ota_conn_index = p_evt->conn_idx;
+            }
             if(s_dfu_enter_func != NULL)
             {
                 s_dfu_enter_func();
@@ -629,7 +646,7 @@ static void otas_evt_process(otas_evt_t *p_evt)
 
 static void ble_send_data(uint8_t *p_data, uint16_t length)
 {
-    otas_notify_tx_data(0, p_data, length);
+    otas_notify_tx_data(s_ota_conn_index, p_data, length);
 }
 
 static bool wait_for_disconnection(void)
@@ -637,7 +654,7 @@ static bool wait_for_disconnection(void)
     // wait mobile phone to release connection.
     for (int i = 0; i < 200; i++)
     {
-        uint16_t hdl = get_conn_hdl_by_idx(0);
+        uint16_t hdl = get_conn_hdl_by_idx(s_ota_conn_index);
         if (0xFFFF == hdl)
         {
             delay_ms(100);
@@ -646,7 +663,7 @@ static bool wait_for_disconnection(void)
         delay_ms(10);
     }
     // disconnect by self
-    ble_gap_disconnect_with_reason(0, BLE_GAP_HCI_REMOTE_DEV_TERMINATION_DUE_TO_POWER_OFF);
+    ble_gap_disconnect_with_reason(s_ota_conn_index, BLE_GAP_HCI_REMOTE_DEV_TERMINATION_DUE_TO_POWER_OFF);
     delay_ms(100);
     return false;
 }
@@ -1288,7 +1305,7 @@ void dfu_service_init(dfu_enter_callback dfu_enter)
     {
         s_dfu_enter_func = dfu_enter;
     }
-
+    s_ota_conn_index = BLE_GAP_INVALID_CONN_INDEX;
     otas_init.evt_handler   = otas_evt_process;
     otas_service_init(&otas_init);
 }
@@ -1436,5 +1453,13 @@ uint16_t dfu_info_update(uint32_t dfu_info_start_addr, dfu_image_info_t *p_image
     }
 
     return SDK_SUCCESS;
+}
+
+void dfu_mode_update(uint32_t mode_pattern)
+{
+    if (mode_pattern == DFU_NON_COPY_UPGRADE_MODE_PATTERN)
+    {
+        s_ota_conn_index = 0;
+    }
 }
 

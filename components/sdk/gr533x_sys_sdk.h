@@ -176,16 +176,18 @@ typedef struct
 {
     uint16_t adc_temp;                /**< ADC TEMP. */
     uint16_t adc_temp_ref;            /**< ADC Reference temperature*/
+    uint16_t adc_vbat_div;            /**< ADC internal resistance ratio*/
     uint16_t slope_int_0p8;           /**< Internal reference 0.8v. */
-    uint16_t offset_int_0p8;          /**< Internal reference 0.8v. */ 
-    uint16_t slope_int_1p2;           /**< Internal reference 1.2v. */ 
-    uint16_t offset_int_1p2;          /**< Internal reference 1.2v. */ 
-    uint16_t slope_int_1p6;           /**< Internal reference 1.6v. */ 
-    uint16_t offset_int_1p6;          /**< Internal reference 1.6v. */ 
-    uint16_t slope_int_2p0;           /**< Internal reference 2.0v. */ 
-    uint16_t offset_int_2p0;          /**< Internal reference 2.0v. */ 
-    uint16_t slope_ext_1p0;           /**< External reference 1.0v. */ 
-    uint16_t offset_ext_1p0;          /**< External reference 1.0v. */ 
+    uint16_t offset_int_0p8;          /**< Internal reference 0.8v. */
+    uint16_t slope_int_1p2;           /**< Internal reference 1.2v. */
+    uint16_t offset_int_1p2;          /**< Internal reference 1.2v. */
+    uint16_t slope_int_1p6;           /**< Internal reference 1.6v. */
+    uint16_t offset_int_1p6;          /**< Internal reference 1.6v. */
+    uint16_t slope_int_2p0;           /**< Internal reference 2.0v. */
+    uint16_t offset_int_2p0;          /**< Internal reference 2.0v. */
+    uint16_t slope_ext_1p0;           /**< External reference 1.0v. */
+    uint16_t offset_ext_1p0;          /**< External reference 1.0v. */
+    uint8_t  cali_mode;               /**< ADC calibration mode. */
 } adc_trim_info_t;
 
 
@@ -203,6 +205,13 @@ typedef struct
     uint8_t  sys_ldo_1p15;            /**< SYSLDO 64m Vout, Trim step is about 30mV. */
     uint8_t  sys_ldo_1p05;            /**< SYSLDO 16m Vout, Trim step is about 30mV. */
 } pmu_trim_info_t;
+
+/**@brief Ringo trim information definition. */
+typedef struct
+{
+    uint16_t ringo_dig_0p9;   /**< Ringo Value with digital core 0.9V. */
+    uint16_t ringo_dig_1p05;  /**< Ringo Value with digital core 1.05V. */
+} ringo_trim_info_t;
 
 /**@brief Warm boot timing parameters(unit: us). */
 typedef struct
@@ -458,6 +467,17 @@ uint16_t sys_device_sram_get(sram_size_t *p_sram_size);
  *****************************************************************************************
  */
 uint16_t sys_device_package_get(package_type_t *p_package_type);
+
+/**
+ *****************************************************************************************
+ * @brief Get the chip ringo trim value.
+ *
+ * @param[out] p_ringo_trim: The pointer to ringo trim value @ref ringo_trim_info_t.
+ *
+ * @return Result of get.
+ *****************************************************************************************
+ */
+uint16_t sys_ringo_trim_get(ringo_trim_info_t *p_ringo_trim);
 
 /**
  *****************************************************************************************

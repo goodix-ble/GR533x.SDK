@@ -237,6 +237,11 @@ uint16_t app_adc_conversion_sync(uint16_t *p_data, uint32_t length, uint32_t tim
         return APP_DRV_ERR_INVALID_PARAM;
     }
 
+    if ((APP_DRV_NEVER_TIMEOUT != timeout) && (APP_DRV_MAX_TIMEOUT < timeout))
+    {
+        return APP_DRV_ERR_INVALID_PARAM;
+    }
+
 #ifdef APP_DRIVER_WAKEUP_CALL_FUN
     adc_wake_up();
 #endif

@@ -141,6 +141,16 @@ uint16_t dfu_fw_image_info_get(uint32_t dfu_fw_save_addr, uint32_t fw_image_size
  ****************************************************************************************
  */
 uint16_t dfu_info_update(uint32_t dfu_info_start_addr, dfu_image_info_t *p_image_info,  uint32_t dfu_fw_save_addr, uint32_t dfu_mode_pattern);
+
+/**
+ ****************************************************************************************
+ * @brief  Update the dfu mode
+ *
+ * @param[in]  mode_pattern : DFU_COPY_UPGRADE_MODE_PATTERN or DFU_NON_COPY_UPGRADE_MODE_PATTERN
+ ****************************************************************************************
+ */
+void dfu_mode_update(uint32_t mode_pattern);
+
 /** @} */
 
 #endif

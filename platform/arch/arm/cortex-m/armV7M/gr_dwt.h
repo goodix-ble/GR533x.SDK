@@ -1,8 +1,9 @@
 
-#ifndef __GR_DWT_H
-#define __GR_DWT_H
+#ifndef GR_DWT_H
+#define GR_DWT_H
 
-#include <stdint.h>
+#include "gr5x.h"
+
 
 /*
  

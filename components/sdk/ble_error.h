@@ -185,22 +185,38 @@
 #define BLE_GATT_ERR_CACHE_UPDATING                 0x58        /**< GATT Cache in updating process. */
 #define BLE_GATT_ERR_CACHE_FINISH                   0x59        /**< GATT Cache is updated or checked. */
 
-/**@brief SEC Specific Error. */
-#define BLE_SEC_ERR_PASSKEY_ENTRY_FAIL              0x61        /**< The user input of passkey failed. */
-#define BLE_SEC_ERR_OOB_NOT_AVAILBL                 0x62        /**< The OOB data is not available. */
-#define BLE_SEC_ERR_AUTH_REQ                        0x63        /**< The pairing procedure cannot be performed as authentication requirements cannot be met due to IO incapability of one or both devices. */
-#define BLE_SEC_ERR_CONFIRM_VAL_FAIL                0x64        /**< The confirm value does not match the calculated compare value. */
-#define BLE_SEC_ERR_PAIRING_NOT_SUPPORT             0x65        /**< Pairing is not supported by the device. */
-#define BLE_SEC_ERR_ENCRPT_KEY_SIZE                 0x66        /**< The resultant encryption key size is insufficient for the security requirements of this device. */
-#define BLE_SEC_ERR_COMMAND_NOT_SUPPORT             0x67        /**< The SMP command received is not supported on this device. */
-#define BLE_SEC_ERR_UNSPECIFIED                     0x68        /**< Pairing failed due to an unspecified reason. */
-#define BLE_SEC_ERR_REPEAT_ATTEMPT                  0x69        /**< Pairing or authentication procedure is disallowed because too little time has elapsed since last pairing request or security request. */
-#define BLE_SEC_ERR_INVALID_PARAM                   0x6A        /**< The Invalid Parameters error code indicates that the command length is invalid or that a parameter is outside of the specified range. */
-#define BLE_SEC_ERR_DHKEY_CHECK_FAIL                0x6B        /**< Indicate to the remote device that the DHKey Check value received doesn't  match the one calculated by the local device. */
-#define BLE_SEC_ERR_NUM_CMP_FAIL                    0x6C        /**< Indicate that the confirm values in the numeric comparison protocol do not match. */
-#define BLE_SEC_ERR_BR_EDR_IN_PROGRESS              0x6D        /**< Indicate that the pairing over the LE transport failed due to a Pairing Request sent over the BR/EDR transport in process. */
-#define BLE_SEC_ERR_KEY_DRIV_GEN_NOT_ALLOW          0x6E        /**< Indicate that the BR/EDR Link Key generated on the BR/EDR transport cannot be used to derive and distribute keys for the LE transport. */
-#define BLE_SEC_ERR_LTK_MISSING                     0x6F        /**< Indicate the LTK of peer devices missing. */
+/**@brief SEC Specific Error by local. */
+#define BLE_SEC_ERR_LOCAL_PASSKEY_ENTRY_FAIL              0x61        /**< The user input of passkey failed. */
+#define BLE_SEC_ERR_LOCAL_OOB_NOT_AVAILBL                 0x62        /**< The OOB data is not available. */
+#define BLE_SEC_ERR_LOCAL_AUTH_REQ                        0x63        /**< The pairing procedure cannot be performed as authentication requirements cannot be met due to IO incapability of one or both devices. */
+#define BLE_SEC_ERR_LOCAL_CONFIRM_VAL_FAIL                0x64        /**< The confirm value does not match the calculated compare value. */
+#define BLE_SEC_ERR_LOCAL_PAIRING_NOT_SUPPORT             0x65        /**< Pairing is not supported by the device. */
+#define BLE_SEC_ERR_LOCAL_ENCRPT_KEY_SIZE                 0x66        /**< The resultant encryption key size is insufficient for the security requirements of this device. */
+#define BLE_SEC_ERR_LOCAL_COMMAND_NOT_SUPPORT             0x67        /**< The SMP command received is not supported on this device. */
+#define BLE_SEC_ERR_LOCAL_UNSPECIFIED                     0x68        /**< Pairing failed due to an unspecified reason. */
+#define BLE_SEC_ERR_LOCAL_REPEAT_ATTEMPT                  0x69        /**< Pairing or authentication procedure is disallowed because too little time has elapsed since last pairing request or security request. */
+#define BLE_SEC_ERR_LOCAL_INVALID_PARAM                   0x6A        /**< The Invalid Parameters error code indicates that the command length is invalid or that a parameter is outside of the specified range. */
+#define BLE_SEC_ERR_LOCAL_DHKEY_CHECK_FAIL                0x6B        /**< Indicate to the remote device that the DHKey Check value received doesn't  match the one calculated by the local device. */
+#define BLE_SEC_ERR_LOCAL_NUM_CMP_FAIL                    0x6C        /**< Indicate that the confirm values in the numeric comparison protocol do not match. */
+#define BLE_SEC_ERR_LOCAL_BR_EDR_IN_PROGRESS              0x6D        /**< Indicate that the pairing over the LE transport failed due to a Pairing Request sent over the BR/EDR transport in process. */
+#define BLE_SEC_ERR_LOCAL_KEY_DRIV_GEN_NOT_ALLOW          0x6E        /**< Indicate that the BR/EDR Link Key generated on the BR/EDR transport cannot be used to derive and distribute keys for the LE transport. */
+#define BLE_SEC_ERR_LOCAL_LTK_MISSING                     0x6F        /**< Indicate the LTK of peer devices missing. */
+/**@brief SEC Specific Error by remote. */
+#define BLE_SEC_ERR_REMOTE_PASSKEY_ENTRY_FAIL             0x71        /**< The user input of passkey failed. */
+#define BLE_SEC_ERR_REMOTE_OOB_NOT_AVAILBL                0x72        /**< The OOB data is not available. */
+#define BLE_SEC_ERR_REMOTE_AUTH_REQ                       0x73        /**< The pairing procedure cannot be performed as authentication requirements cannot be met due to IO incapability of one or both devices. */
+#define BLE_SEC_ERR_REMOTE_CONFIRM_VAL_FAIL               0x74        /**< The confirm value does not match the calculated compare value. */
+#define BLE_SEC_ERR_REMOTE_PAIRING_NOT_SUPPORT            0x75        /**< Pairing is not supported by the device. */
+#define BLE_SEC_ERR_REMOTE_ENCRPT_KEY_SIZE                0x76        /**< The resultant encryption key size is insufficient for the security requirements of this device. */
+#define BLE_SEC_ERR_REMOTE_COMMAND_NOT_SUPPORT            0x77        /**< The SMP command received is not supported on this device. */
+#define BLE_SEC_ERR_REMOTE_UNSPECIFIED                    0x78        /**< Pairing failed due to an unspecified reason. */
+#define BLE_SEC_ERR_REMOTE_REPEAT_ATTEMPT                 0x79        /**< Pairing or authentication procedure is disallowed because too little time has elapsed since last pairing request or security request. */
+#define BLE_SEC_ERR_REMOTE_INVALID_PARAM                  0x7A        /**< The Invalid Parameters error code indicates that the command length is invalid or that a parameter is outside of the specified range. */
+#define BLE_SEC_ERR_REMOTE_DHKEY_CHECK_FAIL               0x7B        /**< Indicate to the remote device that the DHKey Check value received doesn't  match the one calculated by the local device. */
+#define BLE_SEC_ERR_REMOTE_NUM_CMP_FAIL                   0x7C        /**< Indicate that the confirm values in the numeric comparison protocol do not match. */
+#define BLE_SEC_ERR_REMOTE_BR_EDR_IN_PROGRESS             0x7D        /**< Indicate that the pairing over the LE transport failed due to a Pairing Request sent over the BR/EDR transport in process. */
+#define BLE_SEC_ERR_REMOTE_KEY_DRIV_GEN_NOT_ALLOW         0x7E        /**< Indicate that the BR/EDR Link Key generated on the BR/EDR transport cannot be used to derive and distribute keys for the LE transport. */
+#define BLE_SEC_ERR_REMOTE_LTK_MISSING                    0x7F        /**< Indicate the LTK of peer devices missing. */
 
 /**@brief LL Specific Error. */
 #define BLE_LL_ERR_UNKNOWN_HCI_COMMAND              0x91        /**< Unknown HCI Command. */

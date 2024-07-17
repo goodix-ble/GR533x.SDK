@@ -1,9 +1,7 @@
 
-#ifndef __GR_NVIC_H
-#define __GR_NVIC_H
+#ifndef GR_NVIC_H
+#define GR_NVIC_H
 
-
-#include <stdint.h>
 #include "gr5x.h"
 
 /** @defgroup CORTEX_Preemption_Priority_Group CORTEX Preemption Priority Group

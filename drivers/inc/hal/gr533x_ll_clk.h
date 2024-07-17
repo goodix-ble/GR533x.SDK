@@ -250,12 +250,15 @@ __STATIC_INLINE void ll_clk_set_sys_slow_clk(uint32_t clk_sel)
   * @retval None
   *
   */
-__STATIC_INLINE void ll_clk_set_aon_slow_clk(uint32_t clk_sel) 
+__STATIC_INLINE void ll_clk_set_aon_slow_clk(uint32_t clk_sel)
 {
     MODIFY_REG(AON_CTL->MCU_CLK_CTRL, AON_CTL_MCU_CLK_CTRL_SLOW_CLK_SEL, (clk_sel << AON_CTL_MCU_CLK_CTRL_SLOW_CLK_SEL_Pos));
 }
 
 /** @} */
+#ifdef __cplusplus
+}
+#endif
 
 #endif
 

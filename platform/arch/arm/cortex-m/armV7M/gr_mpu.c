@@ -128,6 +128,7 @@
  * Note that the following operation only turns on timer, but does not turn on interrupt,
  * because RTOS compatible running environment
 */
+//lint -e904
 __WEAK uint32_t hal_systick_config(uint32_t ticks)
 {
     if ((ticks - 1UL) > SysTick_LOAD_RELOAD_Msk)
@@ -178,7 +179,7 @@ __WEAK void hal_mpu_config_region(mpu_region_init_t *p_mpu_init)
     /* Set the Region number */
     MPU->RNR = p_mpu_init->number;
 
-    if (RESET != (p_mpu_init->enable))
+    if ((uint8_t)RESET != (p_mpu_init->enable))
     {
         /* Check the parameters */
         gr_assert_param(IS_MPU_INSTRUCTION_ACCESS(p_mpu_init->disable_exec));

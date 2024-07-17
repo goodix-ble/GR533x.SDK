@@ -18,6 +18,23 @@
 #define FLASH_HP_CMD                    PUYA_FLASH_HP_CMD
 #define FLASH_HP_END_DUMMY              PUYA_FLASH_HP_END_DUMMY
 
+#define SOFTWARE_REG1_ULTRA_DEEP_SLEEP_FLAG_POS       (29)
+
+#define SDK_VER_MAJOR                   1
+#define SDK_VER_MINOR                   0
+#define SDK_VER_BUILD                   6
+#define COMMIT_ID                       0x74461bed
+
+static const sdk_version_t sdk_version = {SDK_VER_MAJOR,
+                                          SDK_VER_MINOR,
+                                          SDK_VER_BUILD,
+                                          COMMIT_ID,};//sdk version
+
+void sys_sdk_verison_get(sdk_version_t *p_version)
+{
+    memcpy(p_version, &sdk_version, sizeof(sdk_version_t));
+}
+
 #if (BLE_SUPPORT == 1)
 #ifndef DRIVER_TEST
 static mesh_config_dev_num_t mesh_config_dev_mun =
@@ -31,7 +48,7 @@ static mesh_config_dev_num_t mesh_config_dev_mun =
 #endif
 #endif
 
-__ALIGNED(0x400) FuncVector_t FuncVector_table[MAX_NUMS_IRQn + NVIC_USER_IRQ_OFFSET] = {
+__ALIGNED(0x100) FuncVector_t FuncVector_table[MAX_NUMS_IRQn + NVIC_USER_IRQ_OFFSET] = {
     0,
     Reset_Handler,
     NMI_Handler,
@@ -107,6 +124,21 @@ static void nvds_setup(void)
 }
 #endif
 
+uint8_t sys_device_reset_reason(void)
+{
+   uint8_t reset_season = AON_CTL->DBG_REG_RST_SRC & 0x3FUL;
+
+   AON_CTL->DBG_REG_RST_SRC = AON_CTL->DBG_REG_RST_SRC | reset_season;
+   if(SYS_RESET_REASON_AONWDT & reset_season)
+   {
+       return SYS_RESET_REASON_AONWDT;
+   }
+   else
+   {
+       return SYS_RESET_REASON_NONE;
+   }
+}
+
 void first_class_task(void)
 {
     ll_xqspi_hp_init_t hp_init;
@@ -128,6 +160,25 @@ void first_class_task(void)
     /* platform init process. */
     platform_sdk_init();
 #endif
+}
+
+extern bool clock_calibration_is_done(void);
+static bool wait_for_clock_calibration_done(uint32_t timeout)//unit:us
+{
+    bool ret = true;
+    uint32_t wait_time = 0;
+
+    while(!clock_calibration_is_done())
+    {
+        delay_us(1);
+        if(++wait_time >= timeout)
+        {
+            ret = false;
+            break;
+        }
+    }
+
+    return ret;
 }
 
 void second_class_task(void)
@@ -163,6 +214,10 @@ void second_class_task(void)
     }
     /* Init peripheral sleep management */
     app_pwr_mgmt_init();
+    if(!CHECK_IS_ON_FPGA())
+    {
+        wait_for_clock_calibration_done(1000000);
+    }
 #endif
 }
 
@@ -180,43 +235,10 @@ void otp_trim_init(void)
 #endif
 }
 
-/* bug fix for #C.493 */
-
-/* digcore volt init info */
-typedef struct
-{
-    uint8_t     dcore_method;  /* enum SYS_PMU_CONFIG_DCORE_METHOD */
-    uint32_t    tt_fix_tgt_mv; /* fixed target digcore volt of TT/FF/SF/FS chip */
-    uint32_t    ss_fix_tgt_mv; /* fixed target digcore volt of SS chip */
-    uint32_t    tgt_ringo;     /* target dvs ringo for finding suitable digcore volt */
-    uint32_t    min_dcore_mv;  /* the min digcore volt for mcu work ok, in case the volt finding by ringo too low */
-}pmu_dcore_init_para_st;
-
-extern pmu_dcore_init_para_st g_pmu_dcore_init_para_64M;
-extern pmu_dcore_init_para_st g_pmu_dcore_init_para_16M;
-
 void platform_init(void)
 {
     gr5xx_fpb_init(FPB_MODE_PATCH_AND_DEBUG);
     otp_trim_init();
-
-    /* bug fix for #C.493 */
-    {
-        g_pmu_dcore_init_para_64M.dcore_method  = 2;
-        g_pmu_dcore_init_para_64M.tt_fix_tgt_mv = 950;
-        g_pmu_dcore_init_para_64M.ss_fix_tgt_mv = 1050;
-        g_pmu_dcore_init_para_64M.tgt_ringo     = 1600;
-        g_pmu_dcore_init_para_64M.min_dcore_mv  = 950;
-
-        g_pmu_dcore_init_para_16M.dcore_method  = 2;
-        g_pmu_dcore_init_para_16M.tt_fix_tgt_mv = 950;
-        g_pmu_dcore_init_para_16M.ss_fix_tgt_mv = 1050;
-        g_pmu_dcore_init_para_16M.tgt_ringo     = 1600;
-        g_pmu_dcore_init_para_16M.min_dcore_mv  = 950;
-
-        AON_CTL->MEM_MARGIN = 0xDD;
-    }
-
     first_class_task();
     second_class_task();
 }
@@ -237,13 +259,33 @@ void warm_boot_process(void)
 #endif
 }
 
+/**
+ ****************************************************************************************
+ * @brief  Check whether the system wakes up from ultra deep sleep. If it wakes up from ultra
+ *         deep sleep, reset the entire system. If not, do nothing.
+ * @retval: void
+ ****************************************************************************************
+ */
+static void ultra_deep_sleep_wakeup_handle(void)
+{
+    if (AON_CTL->SOFTWARE_REG1 & (1 << SOFTWARE_REG1_ULTRA_DEEP_SLEEP_FLAG_POS))
+    {
+        hal_nvic_system_reset();
+        while (true)
+            ;
+    }
+}
+
 void soc_init(void)
 {
+    ultra_deep_sleep_wakeup_handle();
+#if !defined(WDT_RUN_ENABLE) || (!WDT_RUN_ENABLE)
     /* Disable WDT */
     ll_aon_wdt_unlock();
     ll_aon_wdt_disable();
     while(ll_aon_wdt_is_busy());
     ll_aon_wdt_lock();
+#endif
 
     platform_init();
 }

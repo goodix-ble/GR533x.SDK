@@ -492,7 +492,6 @@ hal_status_t hal_adc_poll_for_conversion(adc_handle_t *p_adc, uint16_t *p_data, 
  * @param[in]  p_adc:  Pointer to an ADC handle.
  * @param[in]  p_data: Pointer to data buffer which to store ADC conversion results.
  * @param[in]  length: Length of data buffer,  ranging between 0 and 4095.
- * Note: Length must be aligned on a four-byte boundary.
  *
  * @retval ::HAL_OK: Operation is OK.
  * @retval ::HAL_ERROR: Parameter error or operation not supported.

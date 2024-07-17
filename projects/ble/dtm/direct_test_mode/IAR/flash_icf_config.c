@@ -23,7 +23,7 @@
 #endif
 
 #define FLASH_START_ADDR          0x00200000
-#define FLASH_SIZE                0x00080000 //512KB
+#define FLASH_SIZE                0x00080000
 
 #define RAM_START_ADDR            0x00100000
 #define HIGH_RAM_OFFSET           0x1FF00000
@@ -41,12 +41,8 @@
 #define RAM_CODE_SPACE_START      (RAM_START_ADDR + ROM_RTN_RAM_SIZE)
 #define FPB_DATA_SPACE_START      (RAM_START_ADDR + ROM_RTN_RAM_SIZE + RAM_CODE_SPACE_SIZE + HIGH_RAM_OFFSET)
 
-#ifndef RAM_SIZE //GR5330ACNI
-#if CHIP_TYPE == 0
-#define RAM_SIZE              0x00010000 //64KB
-#else
-#define RAM_SIZE              0x00018000 //96KB
-#endif
+#ifndef RAM_SIZE
+#define RAM_SIZE              0x00018000
 #endif
 
 #if BLE_SUPPORT
@@ -78,19 +74,12 @@
 #define APP_MAX_CODE_SIZE         FLASH_SIZE
 #define APP_RAM_SIZE              RAM_SIZE
 
-#if CHIP_TYPE == 0
-    #define IRAM1_end                 0x2000CFFF
-#else
-    #define IRAM1_end                 0x20013FFF
-#endif
-
 int app_dependent_icf( void )
 {
   int __ICFEDIT_region_IROM1_start__     = APP_CODE_LOAD_ADDR;
   int __ICFEDIT_region_IROM1_end__       = 0x002FFFFF;
   int __ICFEDIT_region_IRAM1_start__     = 0x20003050;
-  int __ICFEDIT_region_IRAM1_end__       = IRAM1_end;
-
+  int __ICFEDIT_region_IRAM1_end__       = 0x20013FFF;
   int __ICFEDIT_region_IRAM2_start__     = 0x20003000;
   int __ICFEDIT_region_IRAM2_end__       = 0x2000304F;
   int __ICFEDIT_region_IRAM3_start__     = 0x00102000;

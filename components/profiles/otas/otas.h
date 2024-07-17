@@ -110,6 +110,7 @@ typedef enum
     OTAS_EVT_NOTIFY_COMPLETE,                   /**< notify complete event for ota service. */
     OTAS_EVT_DFU_TASK_ENTER,                    /**< set dfu task enter event for ota service. */
     OTAS_EVT_DFU_MODE_SET,                      /**< set dfu mode for ota service. */
+    OTAS_EVT_DISCONNECT,                        /**< link disconnected. */
 } otas_evt_type_t;
 /** @} */
 

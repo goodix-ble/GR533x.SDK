@@ -214,14 +214,9 @@ static void mlmr_c_att_ntf_ind_evt_handler(uint8_t conn_idx, const ble_gattc_evt
         }
         else
         {
-            combin_received_packet(conn_idx, p_ntf_ind->length, p_ntf_ind->p_value, rx_buffer[conn_idx]);
-            if(received_data_len[conn_idx] == send_data_len[conn_idx])
-            {
-                mlmr_c_evt.p_data = rx_buffer[conn_idx];
-                mlmr_c_evt.length = send_data_len[conn_idx];
-                mlmr_c_evt_handler_excute(&mlmr_c_evt);
-                received_data_len[conn_idx] = 0;
-            }
+            mlmr_c_evt.p_data = p_ntf_ind->p_value;
+            mlmr_c_evt.length = p_ntf_ind->length;
+            mlmr_c_evt_handler_excute(&mlmr_c_evt);
         }
     }
 }

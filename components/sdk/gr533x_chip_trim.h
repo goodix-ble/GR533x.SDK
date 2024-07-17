@@ -54,6 +54,8 @@
 
 #define CHIP_TRIM_PATTERN (0x4744)
 
+#define OTP_UNSPECIFIED_U16_VALUE (0xFFFFU)
+
 typedef struct
 {
     uint16_t ate_version;
@@ -87,7 +89,8 @@ typedef struct
     uint8_t io_ldo_3p0;
     uint8_t stb_io_ldo_1P8;
     uint8_t stb_io_ldo_3p0;
-    uint8_t unused[4];
+    uint16_t ringo_dig_0p9;
+    uint16_t ringo_dig_1p05;
 } __attribute__ ((packed)) pmu_trim_t;
 
 typedef struct
@@ -102,7 +105,9 @@ typedef struct
     uint16_t slope_ext_1p0;   /* Slope based on interanl reference(1.6V)   */
     uint16_t temp;            /* Offset based on interanl reference(0.85V) */
     uint16_t temp_ref;        /* Chip temperature sensor reference temperature. E.g. Decimal 2618: 26.18°„C */
-    uint8_t  unused[4];
+    uint16_t vbat_div;        /* Chip internal resistance voltage ratio. E.g. Decimal 358:3.58 */
+    uint8_t  unused;
+    uint8_t  cali_mode;       /* ADC calibration mode                      */
 } __attribute__ ((packed)) sadc_trim_t;
 
 typedef struct
@@ -137,14 +142,11 @@ typedef struct {
     sadc_trim_t    sadc;
     clk_trim_t     clk;
     flash_timing_t flash;
-//    uint8_t        unused[168];
 } __attribute__ ((packed)) chip_trim0_t;
 
 typedef struct {
     uint8_t  bt_addr[6];
     uint16_t xo_offset;
-//    uint8_t  reserved[24];
-//    uint8_t  user[224];
 } __attribute__ ((packed)) chip_trim1_t;
 
 

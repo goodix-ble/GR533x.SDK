@@ -313,7 +313,7 @@ __STATIC_INLINE void ll_aon_pmu_disable_bleed(void)
   *  RF_REG_4 | BYPASS_EN
   *
   *  @param enable: enable pmu set dig lod bypass.
-  * 
+  *
   */
 __STATIC_INLINE void ll_aon_pmu_set_dig_ldo_bypass(bool enable)
 {
@@ -673,6 +673,10 @@ __STATIC_INLINE uint32_t ll_aon_pmu_get_sysldo_available_status(void)
 {
     return (READ_BITS(AON_PWR->PWR_STAT, AON_PWR_PWR_STAT_FAST_LDO_AVL) >> AON_PWR_PWR_STAT_FAST_LDO_AVL_Pos);
 }
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif
 

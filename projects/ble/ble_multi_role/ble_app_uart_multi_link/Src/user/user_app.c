@@ -61,12 +61,12 @@
 #define APP_SCAN_INTERVAL                    88               /**< Determines scan interval(in units of 0.625 ms). */
 #define APP_SCAN_WINDOW                      88               /**< Determines scan window(in units of 0.625 ms). */
 #define APP_SCAN_DURATION                    10000            /**< Duration of the scanning(in units of 10 ms). */
-#define APP_FIRST_CONN_INTERVAL_MIN          7                /**< Minimal connection interval(in units of 1.25 ms). */
-#define APP_FIRST_CONN_INTERVAL_MAX          7                /**< Maximal connection interval(in units of 1.25 ms). */
-#define APP_SECOND_CONN_INTERVAL_MIN         9                /**< Minimal connection interval(in units of 1.25 ms). */
-#define APP_SECOND_CONN_INTERVAL_MAX         9                /**< Maximal connection interval(in units of 1.25 ms). */
-#define APP_THIRD_CONN_INTERVAL_MIN          11               /**< Minimal connection interval(in units of 1.25 ms). */
-#define APP_THIRD_CONN_INTERVAL_MAX          11               /**< Maximal connection interval(in units of 1.25 ms). */
+#define APP_FIRST_CONN_INTERVAL_MIN          70                /**< Minimal connection interval(in units of 1.25 ms). */
+#define APP_FIRST_CONN_INTERVAL_MAX          70                /**< Maximal connection interval(in units of 1.25 ms). */
+#define APP_SECOND_CONN_INTERVAL_MIN         80                /**< Minimal connection interval(in units of 1.25 ms). */
+#define APP_SECOND_CONN_INTERVAL_MAX         80                /**< Maximal connection interval(in units of 1.25 ms). */
+#define APP_THIRD_CONN_INTERVAL_MIN          90               /**< Minimal connection interval(in units of 1.25 ms). */
+#define APP_THIRD_CONN_INTERVAL_MAX          90               /**< Maximal connection interval(in units of 1.25 ms). */
 #define RECONN_INTERVAL_MIN                  8                /**< Minimal connection interval(in units of 1.25 ms). */
 #define RECONN_INTERVAL_MAX                  8                /**< Minimal connection interval(in units of 1.25 ms). */
 #define APP_FIRST_UPDATE_CONN_INTERVAL_MIN   51               /**< Update minimal connection interval(in units of 1.25 ms). */

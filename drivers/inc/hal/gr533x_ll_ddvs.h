@@ -460,6 +460,10 @@ __STATIC_INLINE uint8_t ll_ddvs_clk_sel_get(void)
 
 /** @} */
 
+#ifdef __cplusplus
+}
+#endif
+
 #endif
 /** @} */
 

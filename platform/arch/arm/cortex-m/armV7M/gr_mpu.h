@@ -49,8 +49,8 @@
   */
 
 /* Define to prevent recursive inclusion -------------------------------------*/
-#ifndef __GR_MPU_H__
-#define __GR_MPU_H__
+#ifndef GR_MPU_H_
+#define GR_MPU_H_
 
 #ifdef __cplusplus
 extern "C" {
@@ -419,7 +419,7 @@ typedef struct _mpu_region_init_t
  *             - 1  Function failed.
  ****************************************************************************************
  */
-uint32_t hal_systick_config(uint32_t ticks_number);
+uint32_t hal_systick_config(uint32_t ticks);
 
 /** @} */
 

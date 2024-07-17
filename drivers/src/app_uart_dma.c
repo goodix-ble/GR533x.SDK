@@ -73,7 +73,7 @@ static const uart_dma_info_t s_dma_info[APP_UART_ID_MAX] = {
             .tx = DMA0_REQUEST_UART0_TX,
             .rx = DMA0_REQUEST_UART0_RX,
         },
-#if (APP_DRIVER_CHIP_TYPE == APP_DRIVER_GR5526X)
+#if ((APP_DRIVER_CHIP_TYPE == APP_DRIVER_GR5525X) || (APP_DRIVER_CHIP_TYPE == APP_DRIVER_GR5526X))
         .dma1_request = {
             .tx = DMA1_REQUEST_UART0_TX,
             .rx = DMA1_REQUEST_UART0_RX,

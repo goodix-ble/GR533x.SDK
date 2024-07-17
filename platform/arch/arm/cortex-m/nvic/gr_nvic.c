@@ -1,5 +1,4 @@
 
-#include "gr5x.h"
 #include "gr_common.h"
 #include "gr_nvic.h"
 
@@ -51,7 +50,7 @@ __WEAK void hal_nvic_disable_irq(IRQn_Type IRQn)
 
 void hal_nvic_system_reset(void)
 {
-		// design for new platform .
+    // design for new platform .
 #ifndef HAL_NVIC_RESET_VERSION_LEGACY
     __set_PRIMASK(1); //Disable Global Interrupt.
     ll_misc_global_soft_reset();
@@ -59,8 +58,8 @@ void hal_nvic_system_reset(void)
     {
         ;
     }
-#else 
-	 __set_PRIMASK(1); //Disable Global Interrupt.
+#else
+    __set_PRIMASK(1); //Disable Global Interrupt.
 
     //Power on memory
     WRITE_REG(AON_MEM->MEM_PWR_WKUP0,   0x002AAAAAU);
@@ -68,7 +67,9 @@ void hal_nvic_system_reset(void)
     /* Write 1 to apply the memory settings in MEM_PWR_WKUP manually. */
     WRITE_REG(AON_MEM->MEM_PWR_APPLY, AON_MEM_MEM_PWR_APPLY_APPLY);
     /* during the bit being 1, writing mem_pwr_apply would not take any effect. */
-    while(READ_BITS(AON_MEM->MEM_PWR_APPLY, AON_MEM_MEM_PWR_APPLY_BUSY) == AON_MEM_MEM_PWR_APPLY_BUSY);
+    while(READ_BITS(AON_MEM->MEM_PWR_APPLY, AON_MEM_MEM_PWR_APPLY_BUSY) == AON_MEM_MEM_PWR_APPLY_BUSY)
+    {
+    }
 
     /* Disable isp check during cold start. */
     *(uint32_t *)(GR5405_ALIAS_ADDRESS + 0x7FF0) = 0x676f6f64;
@@ -80,18 +81,29 @@ void hal_nvic_system_reset(void)
     ll_aon_wdt_unlock();
 
     ll_aon_wdt_disable();
-    while(ll_aon_wdt_is_busy());
+    while(ll_aon_wdt_is_busy() == (uint32_t)0x1)
+    {
+    }
 
     ll_aon_wdt_set_reload_counter(5);
     ll_aon_wdt_reload_counter();
-    while(ll_aon_wdt_is_busy());
+    while(ll_aon_wdt_is_busy() == (uint32_t)0x1)
+    {
+    }
 
     ll_aon_wdt_clear_flag_alarm();
 
     ll_aon_wdt_enable();
-    while(ll_aon_wdt_is_busy());
+    while(ll_aon_wdt_is_busy() == (uint32_t)0x1)
+    {
+    }
 
     ll_aon_wdt_lock();
+
+    // Wait reset.
+    for (;;)
+    {
+    }
 #endif
 }
 
@@ -133,6 +145,3 @@ __WEAK uint32_t hal_nvic_get_active(IRQn_Type IRQn)
     /* Return 1 if active else 0U */
     return NVIC_GetActive(IRQn);
 }
-
-
-

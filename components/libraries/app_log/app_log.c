@@ -110,7 +110,7 @@ struct app_log_env_t
     bool                 is_filter_set; /**< App log filter is set or not. */
     app_log_trans_func_t trans_func;    /**< App log transmit function. */
     app_log_flush_func_t flush_func;    /**< App log flush function. */
-
+    app_log_assert_flush_func_t assert_flush_func; /**< App log flush function for assert. */
 };
 
 /*
@@ -255,6 +255,11 @@ sdk_err_t app_log_init(app_log_init_t *p_log_init, app_log_trans_func_t trans_fu
     s_app_log_env.flush_func    = flush_func;
 
     return SDK_SUCCESS;
+}
+
+void app_log_assert_flush_init(app_log_assert_flush_func_t assert_flush_func)
+{
+    s_app_log_env.assert_flush_func = assert_flush_func;
 }
 
 void app_log_output(uint8_t level, const char *tag, const char *file, const char *func, const long line, const char *format, ...)
@@ -544,6 +549,13 @@ void app_log_flush(void)
     }
 }
 
+void app_log_assert_flush(void)
+{
+    if (s_app_log_env.assert_flush_func)
+    {
+        s_app_log_env.assert_flush_func();
+    }
+}
 
 #if IO_REDIRECT == 0
 #if defined(__CC_ARM) || defined (__ARMCC_VERSION) && (__ARMCC_VERSION >= 6100100)

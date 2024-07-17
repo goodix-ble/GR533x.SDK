@@ -28,5 +28,17 @@ extern uint16_t sys_trim_info_sync(void);
 
 typedef void (*FuncVector_t)(void);
 
+
+#define SYS_RESET_REASON_NONE          (0U)
+#define SYS_RESET_REASON_AONWDT        (1U << 2U)   //AONWDT reset
+/**
+  * @brief  Get chip reset reason.
+  *
+  * @retval Returned value can be one of the following values:
+  *         @arg @ref SYS_RESET_REASON_NONE
+  *         @arg @ref SYS_RESET_REASON_AONWDT
+  */
+uint8_t sys_device_reset_reason(void);
+
 #endif
 

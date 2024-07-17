@@ -309,6 +309,20 @@ ble_rf_match_circuit_t ble_rf_match_circuit_get(void);
 
 /**
  *****************************************************************************************
+ * @brief custom the advertising frequency
+ *
+ * @param[in] ch37_mhz: channel 37 frequency[2360, 2520]MHz
+ * @param[in] ch38_mhz: channel 38 frequency[2360, 2520]MHz
+ * @param[in] ch39_mhz: channel 39 frequency[2360, 2520]MH
+ *            Others: invalid.
+ * @return SDK_SUCCESS: success.
+           Others:      fail
+ *****************************************************************************************
+ */
+sdk_err_t adv_rf_phy_freq_modify(uint16_t ch37_mhz, uint16_t ch38_mhz, uint16_t ch39_mhz);
+
+/**
+ *****************************************************************************************
  * @brief  Start a extended llcp procedure.
  * @param[in] conn_idx:   function pointer of BLE activity end notification function.
  * @param[in] param:      Pointer to a param which intializer supply.

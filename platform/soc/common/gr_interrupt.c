@@ -47,6 +47,16 @@
 /*           Cortex-M4F Processor Interruption and Exception Handlers         */
 /*           Add here the Interrupt Handler for the BLE peripheral(s)         */
 /******************************************************************************/
+extern void SVC_Handler(void);
+extern void DebugMon_Handler(void);
+extern void PendSV_Handler(void);
+extern void SysTick_Handler(void);
+extern void NMI_Handler(void);
+extern void HardFault_Handler(void);
+extern void MemManage_Handler(void);
+extern void BusFault_Handler(void);
+extern void UsageFault_Handler(void);
+extern void SecureFault_Handler(void);
 
 /**
  ****************************************************************************************
@@ -54,7 +64,7 @@
  * @retval void
  ****************************************************************************************
  */
-#if SYS_FAULT_TRACE_ENABLE
+#ifdef SYS_FAULT_TRACE_ENABLE
 
 __WEAK void app_log_flush(void)
 {
@@ -136,16 +146,18 @@ __WEAK void __attribute__((used)) hardfault_trace_handler(unsigned int *hardfaul
     printf("LR [R14] = %x  subroutine call return address\r\n", stacked_lr);
     printf("PC [R15] = %x  program counter\r\n", stacked_pc);
     printf("PSR = %x\r\n", stacked_psr);
-    printf("BFAR = %x\r\n", (*((volatile unsigned int *)(0xE000ED38))));
-    printf("CFSR = %x\r\n", (*((volatile unsigned int *)(0xE000ED28))));
-    printf("HFSR = %x\r\n", (*((volatile unsigned int *)(0xE000ED2C))));
-    printf("DFSR = %x\r\n", (*((volatile unsigned int *)(0xE000ED30))));
-    printf("AFSR = %x\r\n", (*((volatile unsigned int *)(0xE000ED3C))));
+    printf("BFAR = %x\r\n", (*((volatile unsigned int *)(0xE000ED38U))));
+    printf("CFSR = %x\r\n", (*((volatile unsigned int *)(0xE000ED28U))));
+    printf("HFSR = %x\r\n", (*((volatile unsigned int *)(0xE000ED2CU))));
+    printf("DFSR = %x\r\n", (*((volatile unsigned int *)(0xE000ED30U))));
+    printf("AFSR = %x\r\n", (*((volatile unsigned int *)(0xE000ED3CU))));
     printf("SCB_SHCSR = %x\r\n", SCB->SHCSR);
     printf("================================\r\n");
     app_log_flush();
 
-    while (1);
+    for (;;)
+    {
+    }
 }
 
 SECTION_RAM_CODE __WEAK void cortex_backtrace_fault_handler(uint32_t fault_handler_lr, uint32_t fault_handler_sp)
@@ -169,7 +181,9 @@ SECTION_RAM_CODE __WEAK void HardFault_Handler (void)
         "BL      cortex_backtrace_fault_handler\n\t"
     );
 #endif
-    while (1);
+    for (;;)
+    {
+    }
 }
 #elif defined ( __GNUC__ )
 __WEAK void __attribute__((used)) hardfault_trace_handler(unsigned int *hardfault_args)
@@ -202,16 +216,18 @@ __WEAK void __attribute__((used)) hardfault_trace_handler(unsigned int *hardfaul
     printf("LR [R14] = %x  subroutine call return address\r\n", stacked_lr);
     printf("PC [R15] = %x  program counter\r\n", stacked_pc);
     printf("PSR = %x\r\n", stacked_psr);
-    printf("BFAR = %x\r\n", (*((volatile unsigned long *)(0xE000ED38))));
-    printf("CFSR = %x\r\n", (*((volatile unsigned long *)(0xE000ED28))));
-    printf("HFSR = %x\r\n", (*((volatile unsigned long *)(0xE000ED2C))));
-    printf("DFSR = %x\r\n", (*((volatile unsigned long *)(0xE000ED30))));
-    printf("AFSR = %x\r\n", (*((volatile unsigned long *)(0xE000ED3C))));
+    printf("BFAR = %x\r\n", (*((volatile unsigned long *)(0xE000ED38U))));
+    printf("CFSR = %x\r\n", (*((volatile unsigned long *)(0xE000ED28U))));
+    printf("HFSR = %x\r\n", (*((volatile unsigned long *)(0xE000ED2CU))));
+    printf("DFSR = %x\r\n", (*((volatile unsigned long *)(0xE000ED30U))));
+    printf("AFSR = %x\r\n", (*((volatile unsigned long *)(0xE000ED3CU))));
     printf("SCB_SHCSR = %x\r\n", SCB->SHCSR);
     printf("================================\r\n");
     app_log_flush();
 
-    while (1);
+    for (;;)
+    {
+    }
 }
 
 SECTION_RAM_CODE __WEAK void cortex_backtrace_fault_handler(uint32_t fault_handler_lr, uint32_t fault_handler_sp)
@@ -232,14 +248,18 @@ SECTION_RAM_CODE __WEAK void HardFault_Handler (void)
     __asm("BL      cortex_backtrace_fault_handler");
 #endif
 
-    while (1);
+    for (;;)
+    {
+    }
 }
 
 #else
 
 __WEAK void HardFault_Handler (void)
 {
-   while (1);
+    for (;;)
+    {
+    }
 }
 
 #endif
@@ -248,7 +268,9 @@ __WEAK void HardFault_Handler (void)
 
 SECTION_RAM_CODE __WEAK void HardFault_Handler (void)
 {
-    while (1);
+    for (;;)
+    {
+    }
 }
 
 #endif  /*SYS_FAULT_TRACE_ENABLE*/
@@ -261,7 +283,9 @@ SECTION_RAM_CODE __WEAK void HardFault_Handler (void)
  */
 __WEAK void MemManage_Handler(void)
 {
-    while (1);
+    for (;;)
+    {
+    }
 }
 
 /**
@@ -272,7 +296,9 @@ __WEAK void MemManage_Handler(void)
  */
 __WEAK void BusFault_Handler(void)
 {
-    while (1);
+    for (;;)
+    {
+    }
 }
 
 /**
@@ -283,7 +309,9 @@ __WEAK void BusFault_Handler(void)
  */
 __WEAK void UsageFault_Handler(void)
 {
-    while (1);
+    for (;;)
+    {
+    }
 }
 
 /**
@@ -294,7 +322,9 @@ __WEAK void UsageFault_Handler(void)
  */
 __WEAK void SecureFault_Handler(void)
 {
-    while (1);
+    for (;;)
+    {
+    }
 }
 
 /**
@@ -344,7 +374,9 @@ SECTION_RAM_CODE __WEAK void __attribute__((naked))SVC_Handler (void)
  */
 __WEAK void DebugMon_Handler(void)
 {
-    while (1);
+    for (;;)
+    {
+    }
 }
 
 /**
@@ -355,7 +387,9 @@ __WEAK void DebugMon_Handler(void)
  */
 __WEAK void PendSV_Handler(void)
 {
-    while (1);
+    for (;;)
+    {
+    }
 }
 
 /**
@@ -366,10 +400,14 @@ __WEAK void PendSV_Handler(void)
  */
 __WEAK void SysTick_Handler(void)
 {
-    while (1);
+    for (;;)
+    {
+    }
 }
 
 __WEAK void NMI_Handler(void)
 {
-    while (1);
+    for (;;)
+    {
+    }
 }

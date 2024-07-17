@@ -532,6 +532,10 @@ __STATIC_INLINE void ll_hs_clk_cal_clear_over_it(void)
 
 /** @} */
 
+#ifdef __cplusplus
+}
+#endif
+
 #endif
 /** @} */
 

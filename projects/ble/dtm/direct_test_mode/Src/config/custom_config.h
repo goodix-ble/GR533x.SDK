@@ -52,7 +52,7 @@
 #endif
 
 // <o> Select chip type
-// <0=> GR5330ACNI
+// <0=> GR5330AENI
 // <1=> GR5331AENI
 // <2=> GR5331CENI
 // <3=> GR5332AENE
@@ -87,6 +87,14 @@
 #ifndef APP_LOG_STORE_ENABLE
 #define APP_LOG_STORE_ENABLE             0
 #endif
+
+// <o> Eanble APP Log via RTT module
+// <0=> DISABLE
+// <1=> ENABLE
+#ifndef APP_LOG_PORT
+#define APP_LOG_PORT                     0
+#endif
+
 
 // <o> Enable Platform Initialize
 // <0=> DISABLE
@@ -400,6 +408,15 @@
 // <1=> Enable algorithm level two
 #ifndef SECURITY_CFG_VAL
 #define SECURITY_CFG_VAL                 0
+#endif
+// </h>
+
+// <h> WDT function configuration
+// <o> mode select
+// <0=> Disable WDT run in background
+// <1=> Enable WDT run in background
+#ifndef WDT_RUN_ENABLE
+#define WDT_RUN_ENABLE                 0
 #endif
 // </h>
 

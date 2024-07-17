@@ -292,6 +292,9 @@ __STATIC_INLINE void ll_mcu_set_cpll_drift_irq_disable(void)
 }
 
 /** @} */
+#ifdef __cplusplus
+}
+#endif
 
 #endif
 

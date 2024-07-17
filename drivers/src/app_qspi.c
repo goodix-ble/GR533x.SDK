@@ -128,10 +128,10 @@ const qspi_memorymapped_t g_flash_typical_mmap_read_cmd[FLASH_MMAP_CMD_READ_MAX]
         .x_instruction_size             = QSPI_CONCURRENT_XIP_INSTSIZE_8BIT,
         .x_address_size                 = QSPI_CONCURRENT_XIP_ADDRSIZE_24BIT,
         .x_inst_addr_transfer_format    = QSPI_CONCURRENT_XIP_INST_IN_SPI_ADDR_IN_SPIFRF,
-        .x_mode_bits_en                 = QSPI_CONCURRENT_XIP_MODE_BITS_DISABLE,
-        .x_mode_bits_length             = QSPI_CONCURRENT_XIP_MBL_8,
+        .x_mode_bits_en                 = QSPI_CONCURRENT_XIP_MODE_BITS_ENABLE,
+        .x_mode_bits_length             = QSPI_CONCURRENT_XIP_MBL_4,
         .x_mode_bits_data               = 0x00,
-        .x_dummy_cycles                 = 4,
+        .x_dummy_cycles                 = 2,
         .x_continous_xfer_toc           = 0,
         .x_sioo_mode                    = QSPI_CONCURRENT_XIP_INST_SENT_EVERY_ACCESS,
         .x_data_frame_format            = QSPI_CONCURRENT_XIP_FRF_DUAL_SPI,
@@ -146,9 +146,9 @@ const qspi_memorymapped_t g_flash_typical_mmap_read_cmd[FLASH_MMAP_CMD_READ_MAX]
         .x_address_size                 = QSPI_CONCURRENT_XIP_ADDRSIZE_24BIT,
         .x_inst_addr_transfer_format    = QSPI_CONCURRENT_XIP_INST_IN_SPI_ADDR_IN_SPIFRF,
         .x_mode_bits_en                 = QSPI_CONCURRENT_XIP_MODE_BITS_ENABLE,
-        .x_mode_bits_length             = QSPI_CONCURRENT_XIP_MBL_8,
+        .x_mode_bits_length             = QSPI_CONCURRENT_XIP_MBL_4,
         .x_mode_bits_data               = 0x20,
-        .x_dummy_cycles                 = 0,
+        .x_dummy_cycles                 = 2,
         .x_continous_xfer_toc           = 0,
         .x_sioo_mode                    = QSPI_CONCURRENT_XIP_INST_SENT_ONLY_FIRST_ACCESS,
         .x_data_frame_format            = QSPI_CONCURRENT_XIP_FRF_DUAL_SPI,
@@ -179,10 +179,10 @@ const qspi_memorymapped_t g_flash_typical_mmap_read_cmd[FLASH_MMAP_CMD_READ_MAX]
         .x_instruction_size             = QSPI_CONCURRENT_XIP_INSTSIZE_8BIT,
         .x_address_size                 = QSPI_CONCURRENT_XIP_ADDRSIZE_24BIT,
         .x_inst_addr_transfer_format    = QSPI_CONCURRENT_XIP_INST_IN_SPI_ADDR_IN_SPIFRF,
-        .x_mode_bits_en                 = QSPI_CONCURRENT_XIP_MODE_BITS_DISABLE,
+        .x_mode_bits_en                 = QSPI_CONCURRENT_XIP_MODE_BITS_ENABLE,
         .x_mode_bits_length             = QSPI_CONCURRENT_XIP_MBL_8,
         .x_mode_bits_data               = 0x00,
-        .x_dummy_cycles                 = 6,
+        .x_dummy_cycles                 = 4,
         .x_continous_xfer_toc           = 0,
         .x_sioo_mode                    = QSPI_CONCURRENT_XIP_INST_SENT_EVERY_ACCESS,
         .x_data_frame_format            = QSPI_CONCURRENT_XIP_FRF_QUAD_SPI,
@@ -726,6 +726,11 @@ uint16_t app_qspi_command_receive_sync(app_qspi_id_t id, app_qspi_command_t *p_c
         return APP_DRV_ERR_POINTER_NULL;
     }
 
+    if ((APP_DRV_NEVER_TIMEOUT != timeout) && (APP_DRV_MAX_TIMEOUT < timeout))
+    {
+        return APP_DRV_ERR_INVALID_PARAM;
+    }
+
 #ifdef APP_DRIVER_WAKEUP_CALL_FUN
     qspi_wake_up(id);
 #endif
@@ -801,6 +806,11 @@ uint16_t app_qspi_command_transmit_sync(app_qspi_id_t id, app_qspi_command_t *p_
     if (p_cmd == NULL || p_data == NULL)
     {
         return APP_DRV_ERR_POINTER_NULL;
+    }
+
+    if ((APP_DRV_NEVER_TIMEOUT != timeout) && (APP_DRV_MAX_TIMEOUT < timeout))
+    {
+        return APP_DRV_ERR_INVALID_PARAM;
     }
 
 #ifdef APP_DRIVER_WAKEUP_CALL_FUN
@@ -879,6 +889,11 @@ uint16_t app_qspi_command_sync(app_qspi_id_t id, app_qspi_command_t *p_cmd, uint
     if (p_cmd == NULL)
     {
         return APP_DRV_ERR_POINTER_NULL;
+    }
+
+    if ((APP_DRV_NEVER_TIMEOUT != timeout) && (APP_DRV_MAX_TIMEOUT < timeout))
+    {
+        return APP_DRV_ERR_INVALID_PARAM;
     }
 
 #ifdef APP_DRIVER_WAKEUP_CALL_FUN
@@ -965,6 +980,11 @@ uint16_t app_qspi_transmit_sync_ex(app_qspi_id_t id, uint32_t qspi_mode, uint32_
     }
 
     if (p_data == NULL || length == 0)
+    {
+        return APP_DRV_ERR_INVALID_PARAM;
+    }
+
+    if ((APP_DRV_NEVER_TIMEOUT != timeout) && (APP_DRV_MAX_TIMEOUT < timeout))
     {
         return APP_DRV_ERR_INVALID_PARAM;
     }
@@ -1076,6 +1096,11 @@ uint16_t app_qspi_receive_sync_ex(app_qspi_id_t id, uint32_t qspi_mode, uint32_t
     }
 
     if (p_data == NULL || length == 0)
+    {
+        return APP_DRV_ERR_INVALID_PARAM;
+    }
+
+    if ((APP_DRV_NEVER_TIMEOUT != timeout) && (APP_DRV_MAX_TIMEOUT < timeout))
     {
         return APP_DRV_ERR_INVALID_PARAM;
     }

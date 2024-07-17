@@ -28,6 +28,7 @@
 #define FLASH_START_ADDR          0x00200000
 #define FLASH_SIZE                0x00080000 //512KB
 
+
 #define RAM_START_ADDR            0x00100000
 #define HIGH_RAM_OFFSET           0x1FF00000
 #define FPB_DATA_SPACE_SIZE       0x50

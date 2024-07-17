@@ -549,8 +549,8 @@ __STATIC_INLINE uint32_t ll_gpio_get_pin_input_type(gpio_regs_t *GPIOx, uint32_t
   */
 __STATIC_INLINE void ll_gpio_set_pin_pull(gpio_regs_t *GPIOx, uint32_t pin_mask, uint32_t pull)
 {
-    MODIFY_REG(MCU_PAD->DPAD_PE_BUS, pin_mask, ((pull == LL_GPIO_PULL_NO) ? 0x0000U  : pin_mask));
     MODIFY_REG(MCU_PAD->DPAD_PS_BUS, pin_mask, ((pull == LL_GPIO_PULL_UP) ? pin_mask : 0x0000U));
+    MODIFY_REG(MCU_PAD->DPAD_PE_BUS, pin_mask, ((pull == LL_GPIO_PULL_NO) ? 0x0000U  : pin_mask));
 }
 
 /**

@@ -90,6 +90,8 @@ class IARPrjGen():
                         for GroupName_node in Group_node.findall("GroupName"):
                             if (GroupName_node.text == "gr_stack_lib"):
                                 continue
+                            if (GroupName_node.text == "gr_mesh_lib"):
+                                continue
                             src_str = ''
                             src_str += "<group>\n"
                             src_str += "<name>"
@@ -302,9 +304,7 @@ def main():
     G_IAR_PATH = "..\\..\\..\\..\\..\\platform\\soc\\linker\\iar\\"
 
     shutil.copy(os.path.join(G_IAR_PATH, "flash_icf_config.c"), PROJECT_PATH)
-
     shutil.copy(os.path.join(G_IAR_PATH, "GR5xxx_make_icf.bat"), PROJECT_PATH)
-
     shutil.copy(os.path.join(G_IAR_PATH, "make_app_dependent_icf.py"), PROJECT_PATH)
 
 if __name__ == "__main__":

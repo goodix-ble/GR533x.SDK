@@ -738,6 +738,32 @@ hal_status_t hal_dual_timer_set_period_count(dual_timer_handle_t *p_dual_timer, 
  */
 hal_status_t hal_dual_timer_io_crtl_config(dual_timer_handle_t *p_dual_timer, dual_timer_io_ctrl_cfg_t *p_structure);
 
+/**
+ ****************************************************************************************
+ * @brief  DUAL TIMER reload value and bg reload value set
+ *
+ * @param[in]  p_dual_timer: Pointer to a DUAL_TIMER handle which contains the configuration information for the specified DUAL TIMER.
+ * @param[in]  reload_value: The DUAL TIMER reload value
+ * @param[in]  bg_reload_value: The DUAL TIMER bg reload value
+ *
+ * @retval ::HAL_OK: Operation is OK.
+ * @retval ::HAL_ERROR: Parameter error or operation not supported.
+ * @retval ::HAL_BUSY: Driver is busy.
+ * @retval ::HAL_TIMEOUT: Timeout occurred.
+ ****************************************************************************************
+ */
+hal_status_t hal_dual_timer_set_reload_background_reload(dual_timer_handle_t *p_dual_timer, uint32_t reload_value,uint32_t bg_reload_value);
+
+/**
+ ****************************************************************************************
+ * @brief  DUAL TIMER get current counter
+ *
+ * @param[in]  p_dual_timer: Pointer to a DUAL_TIMER handle which contains the configuration information for the specified DUAL TIMER.
+ *
+ * @return     Dual Timer counter.
+ ****************************************************************************************
+ */
+uint32_t hal_dual_timer_get_counter_value(dual_timer_handle_t *p_dual_timer);
 /** @} */
 
 /** @} */

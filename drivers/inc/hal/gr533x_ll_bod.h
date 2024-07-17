@@ -90,7 +90,7 @@ typedef struct _ll_bod_init
 
     uint8_t bod2_auto_power_bypass_en; /**< Specifies the bod bod2 auto power bypass.
                                  This parameter can be a value of @ref BOD_LL_BOD2_AUTO_POWER_BYPASS.
-                                 This parament can be modified afterwards using unitary function @ref ll_bod_bod2_auto_power_bypass_enable() 
+                                 This parament can be modified afterwards using unitary function @ref ll_bod_bod2_auto_power_bypass_enable()
                                     and ll_bod_bod2_auto_power_bypass_disable(). */
 } ll_bod_init_t;
 
@@ -489,6 +489,11 @@ error_status_t ll_bod_init(ll_bod_init_t *p_bod_init);
   */
 void ll_bod_struct_init(ll_bod_init_t *p_bod_init);
 /** @} */
+
+#ifdef __cplusplus
+}
+#endif
+
 #endif
 /** @} */
 

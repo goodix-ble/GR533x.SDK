@@ -14,48 +14,10 @@
  ****************************************************************************************
  */
 
-/*
- * ENUMERATIONS
- ****************************************************************************************
- */
-enum
-{
-    BIT_LLD_RXDESC_RREE,
-    BIT_BLE_UTIL_BUF_RX_RREE,
-};
-
-/*
- * MACRO DECLARATIONS
- ****************************************************************************************
- */
-#define PATCH_ENABLE_FLAG(BIT) (1<<BIT)
-//please add the macro for the different application(Support 16 patches);
-
-#define MANDATORY_PATCH       (PATCH_ENABLE_FLAG(BIT_LLD_RXDESC_RREE) | PATCH_ENABLE_FLAG(BIT_BLE_UTIL_BUF_RX_RREE))
-
-#define OPTIMIZING_PATCH        0
-
-/*
- * FUNCTION DECLARATIONS
- ****************************************************************************************
- */
-/**
-  * @brief  The enable of the patch featurn based on the FPB of the Cortex ARM-m4.
-  * @param  patch_flag    the flag used to control the function to be selected as the patch function,one bit for one function.
-  *         This parameter can be a combiantion of the following values:
-  *         @arg @ref (1<<BIT_LLD_LLCP_OPCODE_IS_INVALID ,    )
-  *         @arg @ref (1<<BIT_LLD_TEST_ISR,                )
-  *         please used the MACRO PATCH_ENABLE_FLAG(BIT) just like the MANDATORY_PATCH;
-  *         and the different MACRO maybe defined for the different application;
-  * @retval None
-  */
-
-extern void set_patch_flag(uint32_t patch_flag);
-
 /**
   * @brief  Register the path function to the hardware patch.
   * @param  patch_index  the patch index.
-  * @param  func_addr    the address of the patch function. 
+  * @param  func_addr    the address of the patch function.
   *
   * @retval None
   */

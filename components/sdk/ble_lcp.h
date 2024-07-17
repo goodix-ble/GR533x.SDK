@@ -180,6 +180,24 @@ uint16_t gdx_lcp_channel_get(uint32_t *freq_mhz);
 
 /**
  ****************************************************************************************
+ * @brief Set lcp access address
+ *
+ * @retval ::SDK_SUCCESS: Operation is Success.
+ ****************************************************************************************
+ */
+uint16_t gdx_lcp_access_address_set(uint32_t access_address);
+
+/**
+ ****************************************************************************************
+ * @brief Get lcp rssi
+ *
+ * @return Rssi value.
+ ****************************************************************************************
+ */
+int8_t gdx_lcp_rssi_get(void);
+
+/**
+ ****************************************************************************************
  * @brief Set LCP rx windows size.
  *
  * @param[in] time_us: the windows size of rx.
