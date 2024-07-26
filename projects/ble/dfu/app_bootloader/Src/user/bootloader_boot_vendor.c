@@ -135,7 +135,7 @@ static uint32_t hal_flash_read_judge_security(const uint32_t addr, uint8_t *buf,
     return read_bytes;
 }
 
-static bool bootloader_firmware_verify(uint32_t bin_addr, uint32_t bin_size, uint32_t check_sum_store)
+static bool bootloader_firmware_verify(uint32_t bin_addr, uint32_t bin_size, uint32_t check_sum_store, bool is_in_load_addr)
 {
     extern bool check_image_crc(const uint8_t * p_data, uint32_t len, uint32_t check);
 
@@ -154,10 +154,18 @@ static bool bootloader_firmware_verify(uint32_t bin_addr, uint32_t bin_size, uin
         APP_LOG_DEBUG("    Signature verify check success.");
 #endif
 
-    if (!check_image_crc((uint8_t *)bin_addr, bin_size, check_sum_store))
+#ifndef SOC_GR533X
+    if (!sys_security_enable_status_check() || is_in_load_addr)
     {
-        APP_LOG_DEBUG("    Firmware checksum invalid");
-        return false;
+#else
+    {
+#endif
+        if (!check_image_crc((uint8_t *)bin_addr, bin_size, check_sum_store))
+        {
+            APP_LOG_DEBUG("    Firmware checksum invalid");
+            return false;
+        }
+        APP_LOG_DEBUG("    Firmware checksum check success.");
     }
 
     return true;
@@ -182,7 +190,7 @@ static bool bootloader_app_dfu_fw_verify(void)
         return false;
     }
 
-    return bootloader_firmware_verify(s_dfu_info.dfu_fw_save_addr, s_dfu_info.dfu_img_info.boot_info.bin_size, s_dfu_info.dfu_img_info.boot_info.check_sum);
+    return bootloader_firmware_verify(s_dfu_info.dfu_fw_save_addr, s_dfu_info.dfu_img_info.boot_info.bin_size, s_dfu_info.dfu_img_info.boot_info.check_sum, false);
 }
 
 static bool bootloader_dfu_info_verify(void)
@@ -289,7 +297,7 @@ static bool bootloader_app_fw_verify()
     hal_flash_read_judge_security(APP_INFO_START_ADDR, (uint8_t*)&s_app_img_info, sizeof(s_app_img_info));
 
     if (0 == memcmp(s_app_img_info.comments, APP_FW_COMMENTS, strlen(APP_FW_COMMENTS)) &&
-        bootloader_firmware_verify(s_app_img_info.boot_info.load_addr, s_app_img_info.boot_info.bin_size, s_app_img_info.boot_info.check_sum))
+        bootloader_firmware_verify(s_app_img_info.boot_info.load_addr, s_app_img_info.boot_info.bin_size, s_app_img_info.boot_info.check_sum, true))
     {
         APP_LOG_DEBUG("    Found app firmware image info in APP INFO AREA");
         return true;
@@ -300,7 +308,7 @@ static bool bootloader_app_fw_verify()
         hal_flash_read(i * sizeof(s_app_img_info) + SCA_IMG_INFO_ADDR, (uint8_t *)&s_app_img_info, sizeof(s_app_img_info));
 
         if (0 == memcmp(s_app_img_info.comments, APP_FW_COMMENTS, strlen(APP_FW_COMMENTS)) &&
-            bootloader_firmware_verify(s_app_img_info.boot_info.load_addr, s_app_img_info.boot_info.bin_size, s_app_img_info.boot_info.check_sum))
+            bootloader_firmware_verify(s_app_img_info.boot_info.load_addr, s_app_img_info.boot_info.bin_size, s_app_img_info.boot_info.check_sum, true))
         {
             bootloader_app_img_info_update(&s_app_img_info);
             APP_LOG_DEBUG("    Found app firmware image info in SYSTEM CONFIG AREA");
