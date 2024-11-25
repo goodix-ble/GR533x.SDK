@@ -131,5 +131,5 @@
 
 ## 4. Change Log
 
-- Click to view the [change log](../../wiki/Change-Notes-for-GR553x)
+- Click to view the [change log](../../wiki)
 
