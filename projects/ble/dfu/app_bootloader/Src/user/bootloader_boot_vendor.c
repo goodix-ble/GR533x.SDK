@@ -296,7 +296,9 @@ static bool bootloader_app_fw_verify()
 
     hal_flash_read_judge_security(APP_INFO_START_ADDR, (uint8_t*)&s_app_img_info, sizeof(s_app_img_info));
 
-    if (0 == memcmp(s_app_img_info.comments, APP_FW_COMMENTS, strlen(APP_FW_COMMENTS)) &&
+    if (FLASH_START_ADDR + FLASH_SIZE > s_app_img_info.boot_info.load_addr &&
+        FLASH_START_ADDR < s_app_img_info.boot_info.load_addr &&
+        0 == memcmp(s_app_img_info.comments, APP_FW_COMMENTS, strlen(APP_FW_COMMENTS)) &&
         bootloader_firmware_verify(s_app_img_info.boot_info.load_addr, s_app_img_info.boot_info.bin_size, s_app_img_info.boot_info.check_sum, true))
     {
         APP_LOG_DEBUG("    Found app firmware image info in APP INFO AREA");
@@ -308,6 +310,7 @@ static bool bootloader_app_fw_verify()
         hal_flash_read(i * sizeof(s_app_img_info) + SCA_IMG_INFO_ADDR, (uint8_t *)&s_app_img_info, sizeof(s_app_img_info));
 
         if (0 == memcmp(s_app_img_info.comments, APP_FW_COMMENTS, strlen(APP_FW_COMMENTS)) &&
+            s_app_img_info.boot_info.load_addr != APP_CODE_LOAD_ADDR &&
             bootloader_firmware_verify(s_app_img_info.boot_info.load_addr, s_app_img_info.boot_info.bin_size, s_app_img_info.boot_info.check_sum, true))
         {
             bootloader_app_img_info_update(&s_app_img_info);

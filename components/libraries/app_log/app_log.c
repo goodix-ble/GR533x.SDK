@@ -41,7 +41,6 @@
  */
 #include "app_log.h"
 #include <string.h>
-#include <stdarg.h>
 #include <stdio.h>
 
 /*
@@ -416,6 +415,29 @@ void app_log_raw_info(const char *format, ...)
     va_end(ap);
 }
 
+void app_log_raw_info_va_list(const char *format, va_list ap)
+{
+    int      fmt_result = 0;
+    uint16_t log_length = 0;
+
+    APP_LOG_LOCK();
+
+    fmt_result = vsnprintf((char *)s_log_encode_buf, APP_LOG_LINE_BUF_SIZE, format, ap);
+
+    if ((fmt_result > -1) && (fmt_result) <= APP_LOG_LINE_BUF_SIZE)
+    {
+        log_length = fmt_result;
+    }
+    else
+    {
+        log_length = APP_LOG_LINE_BUF_SIZE;
+    }
+
+    app_log_data_trans(s_log_encode_buf, log_length);
+
+    APP_LOG_UNLOCK();
+}
+
 void app_log_raw_info_append_newline(const char *format, ...)
 {
     int      fmt_result = 0;
@@ -468,10 +490,15 @@ void app_log_hex_dump(void *p_data, uint16_t length)
 
         for (uint8_t j = 0; j < APP_LOG_PER_LINE_HEX_DUMP_SIZE; j++)
         {
+#if (0 == APP_LOG_HEX_DUMP_RAW_DATA_ENABLE)
             snprintf(dump_str, 8, "%02X ", ((uint8_t *)p_data)[convert_idx++]);
+#else
+            snprintf(dump_str, 8, "%02X", ((uint8_t *)p_data)[convert_idx++]);
+#endif
             log_length += app_log_strcpy(log_length, s_log_encode_buf, dump_str);
         }
 
+#if (0 == APP_LOG_HEX_DUMP_RAW_DATA_ENABLE)
         if (convert_idx % APP_LOG_PER_LINE_HEX_DUMP_SIZE == 0)
         {
             snprintf(dump_str, 8, " | ");
@@ -492,6 +519,7 @@ void app_log_hex_dump(void *p_data, uint16_t length)
                 convert_idx++;
             }
         }
+#endif
         log_length += app_log_strcpy(log_length, s_log_encode_buf, APP_LOG_NEWLINE_SIGN);
         app_log_data_trans(s_log_encode_buf, log_length);
         log_length = 0;
@@ -506,10 +534,15 @@ void app_log_hex_dump(void *p_data, uint16_t length)
 
         for (uint8_t j = 0; j < length % APP_LOG_PER_LINE_HEX_DUMP_SIZE; j++)
         {
+#if (0 == APP_LOG_HEX_DUMP_RAW_DATA_ENABLE)
             snprintf(dump_str, 8, "%02X ", ((uint8_t *)p_data)[convert_idx++]);
+#else
+            snprintf(dump_str, 8, "%02X", ((uint8_t *)p_data)[convert_idx++]);
+#endif
             log_length += app_log_strcpy(log_length, s_log_encode_buf, dump_str);
         }
 
+#if (0 == APP_LOG_HEX_DUMP_RAW_DATA_ENABLE)
         for (uint8_t j = 0; j < APP_LOG_PER_LINE_HEX_DUMP_SIZE -length % APP_LOG_PER_LINE_HEX_DUMP_SIZE; j++)
         {
             snprintf(dump_str, 8, "   ");
@@ -533,6 +566,7 @@ void app_log_hex_dump(void *p_data, uint16_t length)
             }
             convert_idx++;
         }
+#endif
 
         log_length += app_log_strcpy(log_length, s_log_encode_buf, APP_LOG_NEWLINE_SIGN);
         app_log_data_trans(s_log_encode_buf, log_length);

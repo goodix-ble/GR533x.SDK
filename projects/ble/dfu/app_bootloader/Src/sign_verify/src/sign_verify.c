@@ -131,7 +131,10 @@ SECTION_RAM_CODE void app_boot_xqspi_set_xip_present_status(xqspi_handle_t *p_xq
 #ifdef SOC_GR5515
     hal_xqspi_set_xip_present_status_patch(p_xqspi, status);
 #else
+    uint32_t cache_flush = p_xqspi->init.cache_flush;
+    p_xqspi->init.cache_flush = XQSPI_CACHE_FLUSH_EN;
     hal_xqspi_set_xip_present_status(p_xqspi, status);
+    p_xqspi->init.cache_flush = cache_flush;
 #endif
 }
 

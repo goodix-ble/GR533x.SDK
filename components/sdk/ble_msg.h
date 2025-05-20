@@ -575,6 +575,9 @@ int sec_rcv_encrypt_req_ind_handler(ke_msg_id_t const msgid, void const *p_param
 int sec_rcv_encrypt_ind_handler(ke_msg_id_t const msgid, void const *p_param,
     ke_task_id_t const dest_id, ke_task_id_t const src_id);
 
+int sec_rcv_sec_req_timeout_ind_handler(ke_msg_id_t const msgid, void const *p_param,
+    ke_task_id_t const dest_id, ke_task_id_t const src_id);
+
 int l2cap_lecb_rcv_conn_req_ind_handler(ke_msg_id_t const msgid, void const *p_param,
     ke_task_id_t const dest_id, ke_task_id_t const src_id);
 

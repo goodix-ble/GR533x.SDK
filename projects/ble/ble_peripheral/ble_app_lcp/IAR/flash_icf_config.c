@@ -28,7 +28,7 @@
 #define RAM_START_ADDR            0x00100000
 #define HIGH_RAM_OFFSET           0x1FF00000
 #define FPB_DATA_SPACE_SIZE       0x50
-#define RAM_CODE_SPACE_SIZE       (0x1000 - FPB_DATA_SPACE_SIZE)
+#define RAM_CODE_SPACE_SIZE       (0x1500)
 
 /* size of ROM reserved RAM in retention cell */
 #ifndef ROM_RTN_RAM_SIZE
@@ -77,18 +77,18 @@
 int app_dependent_icf( void )
 {
   int __ICFEDIT_region_IROM1_start__     = APP_CODE_LOAD_ADDR;
-  int __ICFEDIT_region_IROM1_end__       = 0x002FFFFF;
-  int __ICFEDIT_region_IRAM1_start__     = 0x20003050;
-  int __ICFEDIT_region_IRAM1_end__       = 0x20013FFF;
-  int __ICFEDIT_region_IRAM2_start__     = 0x20003000;
-  int __ICFEDIT_region_IRAM2_end__       = 0x2000304F;
-  int __ICFEDIT_region_IRAM3_start__     = 0x00102000;
-  int __ICFEDIT_region_IRAM3_end__       = 0x0010303F;
+  int __ICFEDIT_region_IROM1_end__       = FLASH_START_ADDR + FLASH_SIZE - 1;
+  int __ICFEDIT_region_IRAM1_start__     = FPB_DATA_SPACE_START + FPB_DATA_SPACE_SIZE;
+  int __ICFEDIT_region_IRAM1_end__       = STACK_END_ADDR - SYSTEM_STACK_SIZE - SYSTEM_HEAP_SIZE - 4 - 1;
+  int __ICFEDIT_region_IRAM2_start__     = FPB_DATA_SPACE_START;
+  int __ICFEDIT_region_IRAM2_end__       = FPB_DATA_SPACE_START + FPB_DATA_SPACE_SIZE - 1;
+  int __ICFEDIT_region_IRAM3_start__     = RAM_CODE_SPACE_START;
+  int __ICFEDIT_region_IRAM3_end__       = RAM_CODE_SPACE_START + RAM_CODE_SPACE_SIZE - 1;
 
-  int __ICFEDIT_region_CALLHEAP_start__  = RAM_END_ADDR - SYSTEM_STACK_SIZE - SYSTEM_HEAP_SIZE - 4;
-  int __ICFEDIT_region_CALLHEAP_end__    = RAM_END_ADDR - SYSTEM_STACK_SIZE - 4;
-  int __ICFEDIT_region_CALLSTACK_start__ = RAM_END_ADDR - SYSTEM_STACK_SIZE;
-  int __ICFEDIT_region_CALLSTACK_end__   = RAM_END_ADDR;
+  int __ICFEDIT_region_CALLHEAP_start__  = STACK_END_ADDR - SYSTEM_STACK_SIZE - SYSTEM_HEAP_SIZE - 4;
+  int __ICFEDIT_region_CALLHEAP_end__    = STACK_END_ADDR - SYSTEM_STACK_SIZE - 4;
+  int __ICFEDIT_region_CALLSTACK_start__ = STACK_END_ADDR - SYSTEM_STACK_SIZE;
+  int __ICFEDIT_region_CALLSTACK_end__   = STACK_END_ADDR;
   return;
 }
 

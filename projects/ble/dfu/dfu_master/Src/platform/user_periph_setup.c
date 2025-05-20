@@ -288,6 +288,7 @@ void user_prompt_message_output(void)
 
         case MASTER_BLE_CONNECTED:
             APP_LOG_DEBUG("BLE Device Connected");
+            otas_c_ctrl_data_send(0, 0x474f4f44);
             dfu_m_get_info();
             break;
 

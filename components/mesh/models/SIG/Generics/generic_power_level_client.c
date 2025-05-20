@@ -47,21 +47,17 @@
  * LOCAL FUNCTIONS DECLARATION
  ****************************************************************************************
  */
- 
 static void actual_status_handle(const mesh_model_msg_ind_t *p_rx_msg,  void *p_args);
 static void last_status_handle(const mesh_model_msg_ind_t *p_rx_msg,  void *p_args);
 static void dft_status_handle(const mesh_model_msg_ind_t *p_rx_msg,  void *p_args);
 static void range_status_handle(const mesh_model_msg_ind_t *p_rx_msg,  void *p_args);
-
-
 static void generic_power_level_client_rx_cb(mesh_model_msg_ind_t *p_model_msg, void *p_args);
-static void generic_power_level_client_sent_cb(mesh_model_msg_sent_ind_t *p_sent, void *p_args);
+static void generic_power_level_client_sent_cb(mesh_model_msg_sent_ind_t *p_sent, void *p_args, void *p_buf);
 
 /*
  * LOCAL VARIABLES
  ****************************************************************************************
  */
-
 static const uint16_t generic_power_level_client_opcode_list[] =
 {
     GENERIC_POWER_LEVEL_OPCODE_STATUS,
@@ -99,7 +95,6 @@ static mesh_model_register_info_t generic_power_level_client_register_info =
  * LOCAL FUNCTIONS
  ****************************************************************************************
  */
-
 static void actual_status_handle(const mesh_model_msg_ind_t *p_rx_msg,  void *p_args)
 {
     generic_power_level_client_t * p_client = (generic_power_level_client_t *) p_args;
@@ -166,7 +161,6 @@ static void range_status_handle(const mesh_model_msg_ind_t *p_rx_msg,  void *p_a
         p_client->settings.p_callbacks->power_range_status_cb(p_client, p_rx_msg, &in_data);
     }
 }
-
 
 static uint8_t message_set_packet_create(generic_power_level_set_msg_pkt_t *p_set, const generic_power_level_set_params_t * p_params,
                                       const model_transition_t * p_transition)
@@ -257,10 +251,10 @@ static void generic_power_level_client_rx_cb(mesh_model_msg_ind_t *p_model_msg, 
     }
 }
 
-static void generic_power_level_client_sent_cb(mesh_model_msg_sent_ind_t *p_sent, void *p_args)
+static void generic_power_level_client_sent_cb(mesh_model_msg_sent_ind_t *p_sent, void *p_args, void *p_buf)
 {
     generic_power_level_client_t * p_client = (generic_power_level_client_t *) p_args;
-    
+
     switch(p_sent->tx_hdl - p_client->model_instance_index * GENERIC_POWER_LEVEL_CLIENT_TX_HDL_TOTAL)
     {
         case GENERIC_POWER_LEVEL_CLIENT_GET_SEND_TX_HDL:

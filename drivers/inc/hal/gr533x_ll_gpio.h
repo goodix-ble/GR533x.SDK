@@ -549,8 +549,8 @@ __STATIC_INLINE uint32_t ll_gpio_get_pin_input_type(gpio_regs_t *GPIOx, uint32_t
   */
 __STATIC_INLINE void ll_gpio_set_pin_pull(gpio_regs_t *GPIOx, uint32_t pin_mask, uint32_t pull)
 {
-    MODIFY_REG(MCU_PAD->DPAD_PS_BUS, pin_mask, ((pull == LL_GPIO_PULL_UP) ? pin_mask : 0x0000U));
     MODIFY_REG(MCU_PAD->DPAD_PE_BUS, pin_mask, ((pull == LL_GPIO_PULL_NO) ? 0x0000U  : pin_mask));
+    MODIFY_REG(MCU_PAD->DPAD_PS_BUS, pin_mask, ((pull == LL_GPIO_PULL_UP) ? pin_mask : 0x0000U));
 }
 
 /**
@@ -1025,7 +1025,7 @@ __STATIC_INLINE uint32_t ll_gpio_is_output_pin_set(gpio_regs_t *GPIOx, uint32_t 
   *         @arg @ref LL_GPIO_PIN_ALL
   * @retval None
   */
-__STATIC_INLINE void ll_gpio_set_output_pin(gpio_regs_t *GPIOx, uint32_t pin_mask)
+__STATIC_FORCEINLINE void ll_gpio_set_output_pin(gpio_regs_t *GPIOx, uint32_t pin_mask)
 {
 #ifdef USE_GPIO_MASK_REGISTER
     WRITE_REG(GPIOx->MASKLOWBYTE[(uint8_t)pin_mask], pin_mask & GPIO_MASKLOWBYTE_DATA);
@@ -1062,7 +1062,7 @@ __STATIC_INLINE void ll_gpio_set_output_pin(gpio_regs_t *GPIOx, uint32_t pin_mas
   *         @arg @ref LL_GPIO_PIN_ALL
   * @retval None
   */
-__STATIC_INLINE void ll_gpio_reset_output_pin(gpio_regs_t *GPIOx, uint32_t pin_mask)
+__STATIC_FORCEINLINE void ll_gpio_reset_output_pin(gpio_regs_t *GPIOx, uint32_t pin_mask)
 {
 #ifdef USE_GPIO_MASK_REGISTER
     WRITE_REG(GPIOx->MASKLOWBYTE[(uint8_t)pin_mask], 0x0000U);
@@ -1098,7 +1098,7 @@ __STATIC_INLINE void ll_gpio_reset_output_pin(gpio_regs_t *GPIOx, uint32_t pin_m
   *         @arg @ref LL_GPIO_PIN_ALL
   * @retval None
   */
-__STATIC_INLINE void ll_gpio_toggle_pin(gpio_regs_t *GPIOx, uint32_t pin_mask)
+__STATIC_FORCEINLINE void ll_gpio_toggle_pin(gpio_regs_t *GPIOx, uint32_t pin_mask)
 {
     WRITE_REG(GPIOx->DATAOUT, READ_REG(GPIOx->DATAOUT) ^ pin_mask);
 }

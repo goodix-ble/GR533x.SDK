@@ -141,9 +141,9 @@
 
 
 #if (CFG_CONTROLLER_ONLY == 0)
-#define PRF_BUF_SIZE              (92*USER_MAX_PRFS + 4)
-#define BOND_BUF_SIZE             (48*USER_MAX_BOND_DEVS + 4)
-#define CONN_BUF_SIZE             (372*USER_MAX_CONNECTIONS + 4)
+#define PRF_BUF_SIZE              (92 * USER_MAX_PRFS + 4)
+#define BOND_BUF_SIZE             (55 * USER_MAX_BOND_DEVS + 4)
+#define CONN_BUF_SIZE             (372 * USER_MAX_CONNECTIONS + 4)
 #else
 #define PRF_BUF_SIZE              (4)
 #define BOND_BUF_SIZE             (4)

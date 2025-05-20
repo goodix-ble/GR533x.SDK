@@ -47,19 +47,15 @@
  * LOCAL FUNCTIONS DECLARATION
  ****************************************************************************************
  */
-
 static void handle_set_cb(const mesh_model_msg_ind_t *p_rx_msg,  void *p_args);
 static void handle_get_cb(const mesh_model_msg_ind_t *p_rx_msg,  void *p_args);
-
 static void generic_default_transition_time_server_rx_cb(mesh_model_msg_ind_t *p_model_msg, void *p_args);
 static void generic_default_transition_time_server_sent_cb(mesh_model_msg_sent_ind_t *p_sent, void *p_args, void *p_buf);
-
 
 /*
  * LOCAL VARIABLES
  ****************************************************************************************
  */
-
 static const uint16_t generic_default_transition_time_server_opcode_list[] =
 {
     GENERIC_DEFAULT_TRANSITION_TIME_OPCODE_GET,
@@ -91,12 +87,10 @@ static mesh_model_register_info_t generic_default_transition_time_server_registe
     .p_args = NULL,
 };
 
-
 /*
  * LOCAL FUNCTIONS
  ****************************************************************************************
  */
-
 static uint32_t status_send(generic_default_transition_time_server_t * p_server,
                                   const mesh_model_msg_ind_t *p_rx_msg,
                                   const generic_default_transition_time_status_params_t * p_params)
@@ -249,7 +243,6 @@ static void generic_default_transition_time_server_sent_cb(mesh_model_msg_sent_i
  * GLOBAL FUNCTIONS
  ****************************************************************************************
  */
- 
 uint16_t generic_default_transition_time_server_init(generic_default_transition_time_server_t *p_server, uint8_t element_offset)
 {
     //note: check parameters!!!
@@ -278,5 +271,3 @@ uint16_t generic_default_transition_time_server_status_publish(generic_default_t
 
     return status_send(p_server, NULL, p_params);
 }
-
-

@@ -52,16 +52,13 @@
  */
 static void property_status_handle(const mesh_model_msg_ind_t *p_rx_msg,  void *p_args);
 static void properties_status_handle(const mesh_model_msg_ind_t *p_rx_msg,  void *p_args);
-
 static void generic_property_client_rx_cb(mesh_model_msg_ind_t *p_model_msg, void *p_args);
-static void generic_property_client_sent_cb(mesh_model_msg_sent_ind_t *p_sent, void *p_args);
-
+static void generic_property_client_sent_cb(mesh_model_msg_sent_ind_t *p_sent, void *p_args, void *p_buf);
 
 /*
  * LOCAL VARIABLES
  ****************************************************************************************
  */
-
 static const uint16_t generic_property_client_opcode_list[] =
 {
     GENERIC_PROPERTIES_OPCODE_MFR_STATUS,
@@ -90,7 +87,6 @@ static const mesh_model_cb_t generic_property_client_msg_cb = {
     .cb_publish_period = NULL,
 };
 
-
 static mesh_model_register_info_t generic_property_client_register_info = 
 {
     .model_id = MESH_MODEL_SIG(MODEL_ID_GENC_PROP),
@@ -106,7 +102,6 @@ static mesh_model_register_info_t generic_property_client_register_info =
  * LOCAL FUNCTIONS
  ****************************************************************************************
  */
-
 static void property_status_handle(const mesh_model_msg_ind_t *p_rx_msg,  void *p_args)
 {
     generic_property_client_t * p_client = (generic_property_client_t *) p_args;
@@ -387,10 +382,10 @@ static void generic_property_client_rx_cb(mesh_model_msg_ind_t *p_model_msg, voi
     }
 }
 
-static void generic_property_client_sent_cb(mesh_model_msg_sent_ind_t *p_sent, void *p_args)
+static void generic_property_client_sent_cb(mesh_model_msg_sent_ind_t *p_sent, void *p_args, void *p_buf)
 {
     generic_property_client_t * p_client = (generic_property_client_t *) p_args;
-    
+
     switch(p_sent->tx_hdl - p_client->model_instance_index * GENERIC_PROPERTY_CLIENT_TX_HDL_TOTAL)
     {
         case GENERIC_PROPERTY_CLIENT_GET_SEND_TX_HDL:

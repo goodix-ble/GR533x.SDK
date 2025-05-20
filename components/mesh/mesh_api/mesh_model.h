@@ -179,7 +179,7 @@ typedef void (*mesh_model_publish_period_cb)(mesh_model_publish_period_ind_t *p_
 /**
  * @brief Definition of callback function to call when PDU has been sent.
  *
- * @param[in] p_ind    Pointer to the transmission status information.
+ * @param[in] p_sent    Pointer to the transmission status information.
  */
 typedef void (*mesh_model_sent_cb)(mesh_model_msg_sent_ind_t *p_sent, void *p_args, void *p_buf);
 
@@ -187,16 +187,16 @@ typedef void (*mesh_model_sent_cb)(mesh_model_msg_sent_ind_t *p_sent, void *p_ar
  * @brief Definition of callback function to call when the reliable message transfer completes.
  *
  * @param[in] p_args       Points to the generic argument, as @ref mesh_model_register_info_t::p_args points to.
- * @param[in] status       Model reliable message transfer status codes. 
+ * @param[in] status       Model reliable message transfer status codes.
  */
-typedef void (*mesh_model_reliable_trans_cb_t)(void * p_args, mesh_model_reliable_trans_status_t status);
+typedef void (*mesh_model_reliable_trans_cb_t)(void *p_args, mesh_model_reliable_trans_status_t status);
 
 /**
  * @brief Mesh model callback
  */
 typedef struct
-{ 
-    mesh_model_rx_cb             cb_rx;              /**< receiving a message for a model. */ 
+{
+    mesh_model_rx_cb             cb_rx;              /**< receiving a message for a model. */
     mesh_model_sent_cb           cb_sent;            /**< Callback executed when a PDU is properly sent. */
     mesh_model_publish_period_cb cb_publish_period;  /**< Callback function called when a new publish period is received. */
 } mesh_model_cb_t;
@@ -205,13 +205,13 @@ typedef struct
  * @brief Mesh model response & publish send information
  */
 typedef struct
-{ 
-    mesh_lid_t           model_lid;        /**< Local identifier of a model. */ 
+{
+    mesh_lid_t           model_lid;        /**< Local identifier of a model. */
     mesh_access_opcode_t opcode;           /**< Mesh message operation code (can be 1-octet, 2-octet, or 3-octet operation code). */
     uint8_t              tx_hdl;           /**< Handle value used by a model to retrieve which message has been sent. */
     uint8_t              *p_data_send;     /**< Pointer to the buffer that contains a message to be published. */
     uint16_t             data_send_len;    /**< The buffer length. */
-    uint16_t             dst;              /**< Unicast destination address of the message (source address parameter of the received request message). */
+    uint16_t             dst;              /**< Destination address of the message. */
     uint16_t             appkey_index;     /**< Application key index. */
 } mesh_model_send_info_t;
 
@@ -220,8 +220,8 @@ typedef struct
  */
 typedef struct
 {
-    mesh_access_opcode_t reply_opcode;          /**< Opcode of the expected reply message. */ 
-    mesh_model_reliable_trans_cb_t status_cb;   /**< Pointer to the callback function that will be called when reliable message transfer completes. */ 
+    mesh_access_opcode_t reply_opcode;          /**< Opcode of the expected reply message. */
+    mesh_model_reliable_trans_cb_t status_cb;   /**< Pointer to the callback function that will be called when reliable message transfer completes. */
     uint32_t timeout_ms;                        /**< The longest duration of a reliable message transfer procedure of a mesh model. */ 
 } mesh_model_reliable_info_t;
 
@@ -262,7 +262,23 @@ typedef struct
 
 /** @addtogroup MESH_MODEL_FUNCTION Functions
  * @{ */
- 
+
+/**
+ ****************************************************************************************
+ * @brief Register a model in one element.
+ *
+ * @param[in]  p_register_info      Pointer to the model's registration information.
+ * @param[out] p_model_lid          Pointer to the variable that contains the allocated local identifier of the model.
+ *
+ * @retval ::MESH_ERROR_NO_ERROR                  Operation is successful.
+ * @retval ::MESH_ERROR_COMMAND_DISALLOWED        Command is disallowed.
+ * @retval ::MESH_ERROR_SDK_INVALID_PARAM         Invalid Parameter.
+ *                                                The parameter p_register_info/p_model_lid is NULL or the p_opcodes (@ref mesh_model_register_info_t::p_opcodes) is NULL
+ *                                                or the p_cb (@ref mesh_model_register_info_t::p_cb) is NULL.
+ ****************************************************************************************
+ */
+mesh_error_t mesh_model_register(mesh_model_register_info_t *p_register_info, mesh_lid_t *p_model_lid);
+
 /**
  ****************************************************************************************
  * @brief Let the model publish a message over mesh network.
@@ -289,7 +305,29 @@ typedef struct
  *                                                The user wants to create a reliable message transfer procedure, but the parameter status_cb (@ref mesh_model_reliable_info_t::status_cb) is NULL.
  ****************************************************************************************
  */
-mesh_error_t mesh_model_publish(mesh_model_send_info_t* p_publish_info, mesh_model_reliable_info_t *p_reliable_info);
+mesh_error_t mesh_model_publish(mesh_model_send_info_t *p_publish_info, mesh_model_reliable_info_t *p_reliable_info);
+
+/**
+ ****************************************************************************************
+ * @brief Let the model send a message over mesh network.
+ *
+ * @note Message status will be reported with model callback (@ref mesh_model_cb_t::cb_sent).
+ *
+ * @param[in] p_msg_info     Pointer to the PDU information.
+ *
+ * @retval ::MESH_ERROR_NO_ERROR                  Operation is successful.
+ * @retval ::MESH_ERROR_INSUFFICIENT_RESOURCES    Insufficient resources.
+ * @retval ::MESH_ERROR_INVALID_MODEL             Invalid model.
+ * @retval ::MESH_ERROR_INVALID_APPKEY_ID         Invalid application key index.
+ * @retval ::MESH_ERROR_INVALID_BINDING           Invalid binding.
+ * @retval ::MESH_ERROR_NOT_FOUND                 Requested resource not found.
+ * @retval ::MESH_ERROR_COMMAND_DISALLOWED        Command is disallowed.
+ * @retval ::MESH_ERROR_SDK_INVALID_PARAM         Invalid Parameter.
+ *                                                The parameter p_msg_info is NULL or destination address (@ref mesh_model_send_info_t::dst) is virtual address
+ *                                                or opcode (@ref mesh_model_send_info_t::opcode) is invalid.
+ ****************************************************************************************
+ */
+mesh_error_t mesh_model_msg_send(mesh_model_send_info_t *p_msg_info);
 
 /**
  ****************************************************************************************
@@ -312,31 +350,14 @@ mesh_error_t mesh_model_publish(mesh_model_send_info_t* p_publish_info, mesh_mod
  *                                                The parameter p_rsp_info is NULL or the opcode (@ref mesh_model_send_info_t::opcode) is invalid.
  ****************************************************************************************
  */
-mesh_error_t mesh_model_rsp_send(mesh_model_send_info_t* p_rsp_info);
-
-
-/**
- ****************************************************************************************
- * @brief Register a model in one element.
- *
- * @param[in]  p_register_info      Pointer to the model's registration information.
- * @param[out] p_model_lid          Pointer to the variable that contains the allocated local identifier of the model.
- *
- * @retval ::MESH_ERROR_NO_ERROR                  Operation is successful.
- * @retval ::MESH_ERROR_COMMAND_DISALLOWED        Command is disallowed.
- * @retval ::MESH_ERROR_SDK_INVALID_PARAM         Invalid Parameter.
- *                                                The parameter p_register_info/p_model_lid is NULL or the p_opcodes (@ref mesh_model_register_info_t::p_opcodes) is NULL
- *                                                or the p_cb (@ref mesh_model_register_info_t::p_cb) is NULL.
- ****************************************************************************************
- */
-mesh_error_t mesh_model_register(mesh_model_register_info_t* p_register_info, mesh_lid_t *p_model_lid);
+mesh_error_t mesh_model_rsp_send(mesh_model_send_info_t *p_rsp_info);
 
 /**
  ****************************************************************************************
  * @brief Check whether the reliable message transfer procedure of a mesh model is ongoing.
  *
  * @param[in]  model_lid   Local identifier of a model.
- * @param[out] p_state     Pointer to the variable that contains the transfer state. 
+ * @param[out] p_state     Pointer to the variable that contains the transfer state.
  *
  * @note If this function operation is successfull, the user can get transfer state from the parameter p_state.
  *       If the variable p_state points to is true, the reliable message transfer procedure is on, otherwise is off.

@@ -40,7 +40,7 @@
  * @{
  * @brief Definitions and prototypes for the BLE SDK interface.
  */
- 
+
   /**
  * @addtogroup BLE_LCP Light Communication Protocol (LCP)
  * @{
@@ -51,7 +51,7 @@
 #define _LCP_SDK_H_
 
 /**@addtogroup BLE_LCP_TYPEDEFS Typedefs
- * @{ 
+ * @{
  */
 /**@brief RX handler callback function. */
 typedef uint16_t (*rx_handler_cb_t) (uint8_t header, uint8_t length, uint8_t *p_payload);
@@ -60,7 +60,7 @@ typedef void (*tx_done_cb_t) (void);
 /** @} */
 
 /**@addtogroup BLE_LCP_ENUMERATIONS Enumerations
- * @{ 
+ * @{
  */
 enum LCP_RATE
 {
@@ -90,22 +90,25 @@ typedef struct
     uint32_t  freq_mhz;                         /**< The value of the frequency(range: 2360-2520), uint: MHz. */
     uint32_t  access_address;               /**< The value of the access address. */
     uint32_t  crc_init;                     /**< The initial value of the crc. */
-    uint32_t  rx_window_size_us;   
-    uint8_t     rate; // LCP_RATE_1MBPS or LCP_RATE_2MBPS
+    uint32_t  rx_window_size_us;
+    uint8_t     rate;    /**< LCP_RATE_1MBPS or LCP_RATE_2MBPS*/
 
     bool     whiten_en;
     bool     b_disable_rx_oneshot_mode;     /**< should be false in timer trigger mode, support oneshot mode only*/
 
-    uint32_t trx_timer_period_us; // while trx_mode=TRX_MODE_TIMER_TX/RX only
-    uint32_t trx_timer_trigger_trx_time_us; // while trx_mode=TRX_MODE_TIMER_TX/RX only, should < trx_timer_period_us
-    tx_done_cb_t tx_done_cb;   // xxx api
+    /**< Define the lcp timer. Valid while trx_mode=TRX_MODE_TIMER_TX/RX only */
+    uint32_t trx_timer_period_us;
+    /**< Define the trigger time of lcp, valid while trx_mode=TRX_MODE_TIMER_TX/RX only. Should < trx_timer_period_us.
+    Suggest to be a little smaller than trx_timer_period_us, such as trx_timer_period_us - 100us*/
+    uint32_t trx_timer_trigger_trx_time_us;
+    tx_done_cb_t tx_done_cb;
     rx_done_cb_t rx_done_cb;
     rx_handler_cb_t rx_handler_cb;          /**< The callback function of rx. */
 } gdx_lcp_config_t;
 /** @} */
 
 /** @addtogroup BLE_LCP_FUNCTIONS Functions
- * @{ 
+ * @{
  */
 /**
  ****************************************************************************************

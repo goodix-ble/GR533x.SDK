@@ -26,6 +26,8 @@ extern void ble_con_env_init(void);
 extern void ble_car_key_env_init(void);
 extern void ble_bt_bredr_env_init(void);
 extern void ble_test_evn_init(void);
+extern void ble_test_private_cmd_init(void);
+extern void ble_adv_env_init(void);
 extern void ble_scan_env_init(void);
 extern void ble_gatts_env_init(void);
 
@@ -463,6 +465,8 @@ static const struct ke_msg_handler sdk_msg_handler_tab[] =
     {GAPC_ENCRYPT_IND,                  (ke_msg_func_t)sec_rcv_encrypt_ind_handler },
     {GAPC_SECURITY_IND,                 (ke_msg_func_t)sec_rcv_sec_req_ind_handler },
     {GAPC_SIGN_COUNTER_IND,             (ke_msg_func_t)sec_rcv_sign_counter_update_ind_handler },
+    {GAPC_SEC_REQ_TIMEOUT_IND,          (ke_msg_func_t)sec_rcv_sec_req_timeout_ind_handler },
+
     #endif
 
     /******************************* sdk l2cap module ***************************************/
@@ -555,6 +559,7 @@ static void ble_feature_init(void)
 {
     #if (CFG_MAX_ADVS)
     adv_func_init();
+    ble_adv_env_init();
     #endif
 
     #if (CFG_MAX_SCAN)
@@ -613,6 +618,10 @@ static void ble_feature_init(void)
 
     #if (DTM_TEST_ENABLE)
     ble_test_evn_init();
+    #ifndef DTM_ATE_ENABLE
+    //no need to support private cmd in ate to save code resource
+    ble_test_private_cmd_init();
+    #endif
     #endif
 
     #if (CHIP_TYPE != 0) && (CFG_MUL_LINK_WITH_SAME_DEV)
@@ -661,6 +670,10 @@ void ble_stack_controller_init(stack_heaps_table_t *p_heaps_table)
 
     #if DTM_TEST_ENABLE
     ble_test_evn_init();
+    #ifndef DTM_ATE_ENABLE
+    //no need to support private cmd in ate to save code resource
+    ble_test_private_cmd_init();
+    #endif
     #endif
 
     ble_stack_controller_enable(p_heaps_table);

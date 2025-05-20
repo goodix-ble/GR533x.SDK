@@ -47,29 +47,23 @@
  * LOCAL FUNCTIONS DECLARATION
  ****************************************************************************************
  */
- 
 static void status_handle(const mesh_model_msg_ind_t *p_rx_msg,  void *p_args);
-
 static void generic_default_transition_time_client_rx_cb(mesh_model_msg_ind_t *p_model_msg, void *p_args);
-static void generic_default_transition_time_client_sent_cb(mesh_model_msg_sent_ind_t *p_sent, void *p_args);
-
+static void generic_default_transition_time_client_sent_cb(mesh_model_msg_sent_ind_t *p_sent, void *p_args, void *p_buf);
 
 /*
  * LOCAL VARIABLES
  ****************************************************************************************
  */
-
 static const uint16_t generic_default_transition_time_client_opcode_list[] =
 {
     GENERIC_DEFAULT_TRANSITION_TIME_OPCODE_STATUS,
 };
 
-
 static const mesh_opcode_handler_t m_opcode_handlers[] =
 {
     {GENERIC_DEFAULT_TRANSITION_TIME_OPCODE_STATUS, status_handle},
 };
-
 
 static const mesh_model_cb_t generic_default_transition_time_client_msg_cb = {
     .cb_rx             = generic_default_transition_time_client_rx_cb,
@@ -92,7 +86,6 @@ static mesh_model_register_info_t generic_default_transition_time_client_registe
  * LOCAL FUNCTIONS
  ****************************************************************************************
  */
-
 static void status_handle(const mesh_model_msg_ind_t *p_rx_msg,  void *p_args)
 {
     generic_default_transition_time_client_t * p_client = (generic_default_transition_time_client_t *) p_args;
@@ -161,10 +154,10 @@ static void generic_default_transition_time_client_rx_cb(mesh_model_msg_ind_t *p
     }
 }
 
-static void generic_default_transition_time_client_sent_cb(mesh_model_msg_sent_ind_t *p_sent, void *p_args)
+static void generic_default_transition_time_client_sent_cb(mesh_model_msg_sent_ind_t *p_sent, void *p_args, void *p_buf)
 {
     generic_default_transition_time_client_t * p_client = (generic_default_transition_time_client_t *) p_args;
-    
+
     switch(p_sent->tx_hdl - p_client->model_instance_index * GENERIC_DEFAULT_TRANSITION_TIME_CLIENT_TX_HDL_TOTAL)
     {
         case GENERIC_DEFAULT_TRANSITION_TIME_CLIENT_GET_SEND_TX_HDL:

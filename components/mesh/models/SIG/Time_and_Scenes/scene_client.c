@@ -49,18 +49,15 @@
  * LOCAL FUNCTIONS DECLARATION
  ****************************************************************************************
  */
- 
 static void scene_status_handle(const mesh_model_msg_ind_t *p_rx_msg,  void *p_args);
 static void scene_register_status_handle(const mesh_model_msg_ind_t *p_rx_msg,  void *p_args);
-
 static void mesh_scene_client_rx_cb(mesh_model_msg_ind_t *p_model_msg, void *p_args);
-static void mesh_scene_client_sent_cb(mesh_model_msg_sent_ind_t *p_sent, void *p_args);
+static void mesh_scene_client_sent_cb(mesh_model_msg_sent_ind_t *p_sent, void *p_args, void *p_buf);
 
 /*
  * LOCAL VARIABLES
  ****************************************************************************************
  */
-
 static const uint16_t mesh_scene_client_opcode_list[] =
 {
     TSCNS_SCENE_OPCODE_STATUS,
@@ -89,9 +86,6 @@ static mesh_model_register_info_t mesh_scene_client_register_info =
     .p_cb = &mesh_scene_client_msg_cb,
     .p_args = NULL,
 };
-
-
-
 
 /*
  * LOCAL FUNCTIONS
@@ -242,10 +236,10 @@ static void mesh_scene_client_rx_cb(mesh_model_msg_ind_t *p_model_msg, void *p_a
     }
 }
 
-static void mesh_scene_client_sent_cb(mesh_model_msg_sent_ind_t *p_sent, void *p_args)
+static void mesh_scene_client_sent_cb(mesh_model_msg_sent_ind_t *p_sent, void *p_args, void *p_buf)
 {
     mesh_scene_client_t * p_client = (mesh_scene_client_t *) p_args;
-    
+
     switch(p_sent->tx_hdl - p_client->model_instance_index * TSCNS_SCENE_CLIENT_TX_HDL_TOTAL)
     {
         case TSCNS_SCENE_CLIENT_GET_SEND_TX_HDL:

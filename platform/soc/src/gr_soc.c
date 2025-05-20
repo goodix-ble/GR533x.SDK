@@ -22,31 +22,20 @@
 
 #define SDK_VER_MAJOR                   1
 #define SDK_VER_MINOR                   0
-#define SDK_VER_BUILD                   6
-#define COMMIT_ID                       0x74461bed
+#define SDK_VER_BUILD                   7
+#define COMMIT_ID                       0x47c977b4
 
 static const sdk_version_t sdk_version = {SDK_VER_MAJOR,
                                           SDK_VER_MINOR,
                                           SDK_VER_BUILD,
                                           COMMIT_ID,};//sdk version
 
+void sys_flash_config_flash_io(void);
+
 void sys_sdk_verison_get(sdk_version_t *p_version)
 {
     memcpy(p_version, &sdk_version, sizeof(sdk_version_t));
 }
-
-#if (BLE_SUPPORT == 1)
-#ifndef DRIVER_TEST
-static mesh_config_dev_num_t mesh_config_dev_mun =
-{
-    .mesh_net_key_list_num = 0,
-    .mesh_app_key_list_num = 0,
-    .mesh_piblic_subscr_list_num = 0,
-    .mesh_friend_num = 0,
-    .mesh_LPN_num = 0
-};
-#endif
-#endif
 
 __ALIGNED(0x100) FuncVector_t FuncVector_table[MAX_NUMS_IRQn + NVIC_USER_IRQ_OFFSET] = {
     0,
@@ -85,6 +74,7 @@ void svc_user_handler(uint8_t svc_num)
         svc_user_func();
 }
 
+#ifndef DTM_ATE_ENABLE
 #if (BLE_SUPPORT == 1)
 __WEAK void nvds_init_error_handler(uint8_t err_code)
 {
@@ -97,6 +87,17 @@ __WEAK void nvds_init_error_handler(uint8_t err_code)
     nvds_init(0, NVDS_NUM_SECTOR);
 #endif
 }
+
+#ifndef DRIVER_TEST
+static mesh_config_dev_num_t mesh_config_dev_mun =
+{
+    .mesh_net_key_list_num = 0,
+    .mesh_app_key_list_num = 0,
+    .mesh_piblic_subscr_list_num = 0,
+    .mesh_friend_num = 0,
+    .mesh_LPN_num = 0
+};
+#endif
 
 static void nvds_setup(void)
 {
@@ -122,28 +123,40 @@ static void nvds_setup(void)
             break;
     }
 }
-#endif
+#endif //BLE_SUPPORT
+#endif //DTM_ATE_ENABLE
 
 uint8_t sys_device_reset_reason(void)
 {
-   uint8_t reset_season = AON_CTL->DBG_REG_RST_SRC & 0x3FUL;
-
-   AON_CTL->DBG_REG_RST_SRC = AON_CTL->DBG_REG_RST_SRC | reset_season;
-   if(SYS_RESET_REASON_AONWDT & reset_season)
-   {
-       return SYS_RESET_REASON_AONWDT;
-   }
-   else
-   {
-       return SYS_RESET_REASON_NONE;
-   }
+    uint8_t reset_season = AON_CTL->DBG_REG_RST_SRC & 0x3FUL;
+    AON_CTL->DBG_REG_RST_SRC = AON_CTL->DBG_REG_RST_SRC | reset_season;
+    if (SYS_RESET_REASON_AONWDT & reset_season)
+    {
+        return SYS_RESET_REASON_AONWDT;
+    }
+    else if (SYS_RESET_REASON_FULL & reset_season)
+    {
+        return SYS_RESET_REASON_FULL;
+    }
+    else if (SYS_RESET_REASON_POR & reset_season)
+    {
+        return SYS_RESET_REASON_POR;
+    }
+    else
+    {
+        return SYS_RESET_REASON_NONE;
+    }
 }
 
 void first_class_task(void)
 {
+//DTM ate worked in debug mode, no need init flash to save resource
+#ifndef DTM_ATE_ENABLE
     ll_xqspi_hp_init_t hp_init;
 
     platform_exflash_env_init();
+
+    sys_flash_config_flash_io();
 
     hp_init.xqspi_hp_enable    = FALSH_HP_MODE;
     hp_init.xqspi_hp_cmd       = FLASH_HP_CMD;
@@ -156,14 +169,26 @@ void first_class_task(void)
 
     /* nvds module init process. */
     nvds_setup();
+    platform_sdk_warmboot_init();
+#endif
+#endif
 
+#if (BLE_SUPPORT == 1)
     /* platform init process. */
     platform_sdk_init();
 #endif
+
+    if (sys_device_is_PACKAGE_GR5331DEBI())
+    {
+        // TPP and GPIO12 share same pin, disable TPP
+        CLEAR_BITS(AON_CTL->TPP_ANA, AON_CTL_TPP_ANA_EN_N);
+        ll_aon_rf_disable_test_mux();
+    }
 }
 
+#if (BLE_SUPPORT == 1)
 extern bool clock_calibration_is_done(void);
-static bool wait_for_clock_calibration_done(uint32_t timeout)//unit:us
+bool wait_for_clock_calibration_done(uint32_t timeout)//unit:us
 {
     bool ret = true;
     uint32_t wait_time = 0;
@@ -180,9 +205,11 @@ static bool wait_for_clock_calibration_done(uint32_t timeout)//unit:us
 
     return ret;
 }
-
+#endif //BLE_SUPPORT
 void second_class_task(void)
 {
+//no need to init lp clk and trigger the pmu timer in DTM ate to save resource
+#ifndef DTM_ATE_ENABLE
 #if (BLE_SUPPORT == 1)
     /* To choose the System clock source and set the accuracy of OSC. */
 #if CFG_LPCLK_INTERNAL_EN
@@ -190,8 +217,11 @@ void second_class_task(void)
 #else
     platform_clock_init((mcu_clock_type_t)SYSTEM_CLOCK, RTC_OSC_CLK, CFG_LF_ACCURACY_PPM, 0);
 #endif
+#endif
+#endif //DTM_ATE_ENABLE
 
-#if PMU_CALIBRATION_ENABLE && !defined(DRIVER_TEST)
+#if (BLE_SUPPORT == 1)
+#if PMU_CALIBRATION_ENABLE && !defined(DRIVER_TEST) &&  !defined(DTM_ATE_ENABLE)
     /* Enable auto pmu calibration function. */
     if(!CHECK_IS_ON_FPGA())
     {
@@ -199,26 +229,29 @@ void second_class_task(void)
     }
 #endif
     system_pmu_init((mcu_clock_type_t)SYSTEM_CLOCK);
-#endif
+#endif //BLE_SUPPORT
 
     // pmu shall be init before clock set
     system_power_mode((sys_power_t)SYSTEM_POWER_MODE);
     SetSerialClock(SERIAL_S64M_CLK);
     SystemCoreSetClock((mcu_clock_type_t)SYSTEM_CLOCK);
 
+//no need to init low power feature in DTM ate to save resource
 #if (BLE_SUPPORT == 1)
-    // recover the default setting by temperature, should be called in the end
-    if(!CHECK_IS_ON_FPGA())
-    {
-        pmu_calibration_handler(NULL);
-    }
+#ifndef DTM_ATE_ENABLE
     /* Init peripheral sleep management */
     app_pwr_mgmt_init();
+
+    // recover the default setting by temperature, should be called
     if(!CHECK_IS_ON_FPGA())
     {
+        pmu_and_clock_calibration_handler(NULL);
         wait_for_clock_calibration_done(1000000);
     }
-#endif
+#else
+    pmu_calibration_handler();
+#endif //DTM_ATE_ENABLE
+#endif //BLE_SUPPORT
 }
 
 void otp_trim_init(void)
@@ -251,7 +284,7 @@ void vector_table_init(void)
     __DSB(); // Data Synchronization Barrier to ensure all
 }
 
-void warm_boot_process(void)
+__WEAK void warm_boot_process(void)
 {
 #if (BLE_SUPPORT == 1)
     vector_table_init();

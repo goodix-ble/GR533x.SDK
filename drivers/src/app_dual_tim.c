@@ -101,20 +101,18 @@ void DUAL_TIMER_IRQHandler(void)
  */
 static bool dual_tim_prepare_for_sleep(void)
 {
-#ifdef APP_DRIVER_WAKEUP_CALL_FUN
     for (uint32_t i = 0; i < APP_DUAL_TIM_ID_MAX; i++)
     {
         if (p_dual_tim_env[i] == NULL)
         {
             continue;
         }
-        if (p_dual_tim_env[i]->dual_tim_state == APP_DUAL_TIM_ACTIVITY)
+
+        if (p_dual_tim_env[i]->dual_tim_state != APP_DUAL_TIM_INVALID)//unable to sleep if dual timer has been inited
         {
-            p_dual_tim_env[i]->dual_tim_state = APP_DUAL_TIM_SLEEP;
+            return false;
         }
     }
-#endif
-
     return true;
 }
 

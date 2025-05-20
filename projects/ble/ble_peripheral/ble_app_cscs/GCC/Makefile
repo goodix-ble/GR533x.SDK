@@ -147,7 +147,7 @@ PRJ_ASM_MICRO_DEFINES :=   \
 
 
 IS_WIN_OS :=  true
-
+LINKER_SCRIPT_TMPL = ../../../../../platform/soc/linker/gcc/gcc_linker.lds
 
 # Set echo cmd
 ECHO = @echo
@@ -179,6 +179,10 @@ CFLAGS += $(foreach md,$(PRJ_C_MICRO_DEFINES),-D$(md))
 CFLAGS += $(COMMON_COMPILE_FLAGS)
 CFLAGS += -O2
 
+## Set CPPFLAGS
+CPPFLAGS += $(foreach inc,$(PRJ_C_INCLUDE_PATH),-I $(inc))
+CPPFLAGS += $(foreach md,$(PRJ_C_MICRO_DEFINES),-D$(md))
+
 ## Set ASMFLAGS
 ASMFLAGS += $(foreach inc,$(PRJ_ASM_INCLUDE_PATH),-I $(inc))
 # Set macro-defines Flags
@@ -186,8 +190,6 @@ ASMFLAGS += $(foreach md,$(PRJ_ASM_MICRO_DEFINES),-D$(md))
 ASMFLAGS += $(COMMON_COMPILE_FLAGS)
 
 ## Set default compile ref files
-LINK_SCRIPT 		= ./gcc_linker.lds
-
 PATCH_FILE  		= ../../../../../platform/soc/linker/gcc/rom_symbol_gcc.txt
 
 GCC_STARTUP_ASM_FILE 	= ../../../../../platform/arch/arm/cortex-m/gcc/startup_gr55xx.s
@@ -202,9 +204,8 @@ endif
 ## Set LDFLAGS
 LDFLAGS += -Wl,--gc-sections
 # LDFLAGS += -specs=nano.specs
-LDFLAGS += -L../../../../../platform/soc/linker/gcc/ -lmesh
-LDFLAGS += -L../../../../../platform/soc/linker/gcc/ -lble_sdk
-
+LDFLAGS += -L../../../../../components/libraries/app_crypto/gcc/ -lapp_crypto
+LDFLAGS += -Wl,--start-group -L../../../../../components/mesh/lib/gcc/ -lmesh -L../../../../../platform/soc/linker/gcc/ -lble_sdk -Wl,--end-group
 
 ## Set compile output directory
 BUILD 		?= out
@@ -221,6 +222,7 @@ OBJ_ASM := $(SRC_ASM:.s=.o)
 OBJ 	:= $(OBJ_C) $(OBJ_ASM)
 OBJ_ADJUST 	= $(patsubst %.o,$(BUILD_OBJ)/%.o,$(notdir $(OBJ)))
 
+LINKER_SCRIPT := $(BUILD)/gcc_linker.lds
 
 ## verbosity switch
 V ?= 0
@@ -243,6 +245,10 @@ vpath %.s ./$(MAKE_PATH)
 ## default make goal
 all: mk_path $(BUILD)/$(MAKE_TARGET_NAME).bin $(BUILD)/$(MAKE_TARGET_NAME).hex
 
+## preprocess link-script
+$(LINKER_SCRIPT): $(LINKER_SCRIPT_TMPL)
+	$(V_CPP) $(CPP) $(CPPFLAGS) -E $< -o $@ -P
+
 ##  compile C & asm files
 $(BUILD_OBJ)/%.o : %.c
 	$(V_CC) $(CC) $(CFLAGS) -c $< -o $@
@@ -260,9 +266,9 @@ $(BUILD)/$(MAKE_TARGET_NAME).bin: $(BUILD_LST)/$(MAKE_TARGET_NAME).elf
 	$(ECHO) "compile binary file ..."
 	$(V_OBJCOPY) $(OBJCOPY) -O binary $< $@
 
-$(BUILD_LST)/$(MAKE_TARGET_NAME).elf: $(OBJ_ADJUST)
+$(BUILD_LST)/$(MAKE_TARGET_NAME).elf: $(OBJ_ADJUST) $(LINKER_SCRIPT)
 	$(ECHO) "compile .elf file ..."
-	$(V_LINK) $(LINK) $(CFLAGS) -T $(LINK_SCRIPT) $(PATCH_FILE) $(OBJ_ADJUST) $(LDFLAGS) -Wl,-Map=$(BUILD_LST)/$(MAKE_TARGET_NAME).map -o $@
+	$(V_LINK) $(LINK) $(CFLAGS) -T $(LINKER_SCRIPT) $(PATCH_FILE) $(OBJ_ADJUST) $(LDFLAGS) -Wl,-Map=$(BUILD_LST)/$(MAKE_TARGET_NAME).map -o $@
 
 
 mk_path :

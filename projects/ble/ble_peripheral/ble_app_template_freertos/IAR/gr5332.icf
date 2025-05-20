@@ -66,10 +66,10 @@ if (!isempty(IROM_region))
 
 if (!isempty(IRAM_region))
 { 
-  define block FPB_BLOCK  	with alignment = 32, size = 0x50 { section FPB };
-  define block RAM_BLOCK  	with alignment = 8, size = 0x1040 { section .textrw };
-  define block CSTACK     	with alignment = 8,  size = __ICFEDIT_size_cstack__{ };
-  define block HEAP      	with alignment = 8,  size = __ICFEDIT_size_heap__{ };
+  define block FPB_BLOCK  	with alignment = 128, size = 0x50 { section FPB };
+  define block RAM_BLOCK  	with alignment = 8 { section .textrw };
+  define block CSTACK     	with alignment = 8 { };
+  define block HEAP      	with alignment = 8 { };
 
   place in IRAM1_region  {readwrite};
   place in IRAM2_region  {block FPB_BLOCK };

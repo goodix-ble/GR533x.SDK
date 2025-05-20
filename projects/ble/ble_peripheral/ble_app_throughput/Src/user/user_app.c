@@ -61,6 +61,10 @@
 #define SLAVE_LATENCY                0             /**< Slave latency. */
 #define CONN_SUP_TIMEOUT             400           /**< Connection supervisory timeout (in units of 10 ms.). */
 #define DEFAULT_MTU_SIZE             247           /**< Default mtu size. */
+#define MAX_TX_OCTET_DEFUALT         251           /**< Default maximum transmitted number of payload octets. */
+#define MAX_TX_TIME_DEFUALT          17040         /**< Defualt maximum packet transmission time (us). */
+#define MAX_RX_OCTET_DEFUALT         251           /**< Default maximum received number of payload octets. */
+#define MAX_RX_TIME_DEFUALT          17040         /**< Defualt maximum packet recevie time (us). */
 
 /*
  * GLOBAL VARIABLE DEFINITIONS
@@ -121,6 +125,12 @@ static void gap_params_init(void)
 
     error_code = ble_gap_privacy_params_set(900, true);
     APP_ERROR_CHECK(error_code);
+
+    error_code = ble_gap_data_length_set(MAX_TX_OCTET_DEFUALT, MAX_TX_TIME_DEFUALT);
+    APP_ERROR_CHECK(error_code);
+
+    extern void ble_rx_data_len_set(uint16_t rx_time, uint16_t rx_octets);
+    ble_rx_data_len_set(MAX_RX_TIME_DEFUALT, MAX_RX_OCTET_DEFUALT);
 
     // Set the default security parameters.
     ble_sec_param_t sec_param =
