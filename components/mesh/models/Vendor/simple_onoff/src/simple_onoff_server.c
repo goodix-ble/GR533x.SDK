@@ -187,13 +187,6 @@ static void handle_set_cb(const mesh_model_msg_ind_t *p_rx_msg,  void *p_args)
                     APP_LOG_WARNING("SERVER[%d] -- Response status faild, error code: 0x%04x", p_server->model_instance_index, send_status);
                 }
             }
-
-            // publish
-            send_status = status_send(p_server, NULL, &out_data);
-            if (MESH_ERROR_NO_ERROR != send_status)
-            {
-                APP_LOG_WARNING("SERVER[%d] -- Publish status faild, error code: 0x%04x", p_server->model_instance_index, send_status);
-            }
         }
     }
 }

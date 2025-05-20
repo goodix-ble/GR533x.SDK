@@ -63,7 +63,7 @@ static TaskHandle_t my_task_handle;
 static SemaphoreHandle_t rx_sync_sem = NULL;
 static uint8_t g_tx_buffer[UART_DATA_LEN]   = {0};
 static uint8_t g_rx_buffer[UART_DATA_LEN]   = {0};
-static uint8_t g_ring_buffer[UART_DATA_LEN] = {0};
+static uint8_t g_ring_buffer[UART_DATA_LEN + 1] = {0};
 
 /*
  * GLOBAL VARIABLE DEFINITIONS

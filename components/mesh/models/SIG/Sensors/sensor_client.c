@@ -48,7 +48,6 @@
  * LOCAL FUNCTIONS DECLARATION
  ****************************************************************************************
  */
- 
 static void descriptor_status_handle(const mesh_model_msg_ind_t *p_rx_msg,  void *p_args);
 static void cadence_status_handle(const mesh_model_msg_ind_t *p_rx_msg,  void *p_args);
 static void settings_status_handle(const mesh_model_msg_ind_t *p_rx_msg,  void *p_args);
@@ -56,15 +55,13 @@ static void setting_status_handle(const mesh_model_msg_ind_t *p_rx_msg,  void *p
 static void sensor_status_handle(const mesh_model_msg_ind_t *p_rx_msg,  void *p_args);
 static void column_status_handle(const mesh_model_msg_ind_t *p_rx_msg,  void *p_args);
 static void series_status_handle(const mesh_model_msg_ind_t *p_rx_msg,  void *p_args);
-
 static void sensor_client_rx_cb(mesh_model_msg_ind_t *p_model_msg, void *p_args);
-static void sensor_client_sent_cb(mesh_model_msg_sent_ind_t *p_sent, void *p_args);
+static void sensor_client_sent_cb(mesh_model_msg_sent_ind_t *p_sent, void *p_args, void *p_buf);
 
 /*
  * LOCAL VARIABLES
  ****************************************************************************************
  */
-
 static const uint16_t sensor_client_opcode_list[] =
 {
     MESH_SENSOR_DESCRIPTOR_OPCODE_STATUS,
@@ -108,7 +105,6 @@ static mesh_model_register_info_t sensor_client_register_info =
  * LOCAL FUNCTIONS
  ****************************************************************************************
  */
-
 static void descriptor_status_handle(const mesh_model_msg_ind_t *p_rx_msg,  void *p_args)
 {
     sensor_client_t * p_client = (sensor_client_t *) p_args;
@@ -435,10 +431,10 @@ static void sensor_client_rx_cb(mesh_model_msg_ind_t *p_model_msg, void *p_args)
     }
 }
 
-static void sensor_client_sent_cb(mesh_model_msg_sent_ind_t *p_sent, void *p_args)
+static void sensor_client_sent_cb(mesh_model_msg_sent_ind_t *p_sent, void *p_args, void *p_buf)
 {
     sensor_client_t * p_client = (sensor_client_t *) p_args;
-    
+
     switch(p_sent->tx_hdl - p_client->model_instance_index * MESH_SENSOR_CLIENT_TX_HDL_TOTAL)
     {
         case MESH_SENSOR_CLIENT_GET_SEND_TX_HDL:

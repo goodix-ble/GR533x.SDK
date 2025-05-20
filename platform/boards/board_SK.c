@@ -149,13 +149,13 @@ void bsp_log_init(void)
     app_log_init(&log_init, bsp_segger_rtt_send, NULL);
 #elif (APP_LOG_PORT == 2)
     app_log_init(&log_init, bsp_itm_send, NULL);
-#endif
+#endif /* APP_LOG_PORT */
 
-#endif
+#endif /* APP_LOG_PORT <= 2 */
+
+#endif /* APP_LOG_ENABLE == 1 */
 
     app_assert_init();
-
-#endif
 }
 
 __WEAK void app_key_evt_handler(uint8_t key_id, app_key_click_type_t key_click_type)
@@ -205,11 +205,11 @@ void bsp_led_open(bsp_led_num_t led_num)
     switch (led_num)
     {
         case BSP_LED_NUM_0:
-            app_io_write_pin(APP_LED_IO_TYPE, APP_LED_NUM_0_IO, APP_IO_PIN_RESET);
+            app_io_write_pin(APP_LED_IO_TYPE, APP_LED_NUM_0_IO, APP_IO_PIN_SET);
             break;
 
         case BSP_LED_NUM_1:
-            app_io_write_pin(APP_LED_IO_TYPE, APP_LED_NUM_1_IO, APP_IO_PIN_RESET);
+            app_io_write_pin(APP_LED_IO_TYPE, APP_LED_NUM_1_IO, APP_IO_PIN_SET);
             break;
 
         default:
@@ -222,11 +222,11 @@ void bsp_led_close(bsp_led_num_t led_num)
     switch (led_num)
     {
         case BSP_LED_NUM_0:
-            app_io_write_pin(APP_LED_IO_TYPE, APP_LED_NUM_0_IO, APP_IO_PIN_SET);
+            app_io_write_pin(APP_LED_IO_TYPE, APP_LED_NUM_0_IO, APP_IO_PIN_RESET);
             break;
 
         case BSP_LED_NUM_1:
-            app_io_write_pin(APP_LED_IO_TYPE, APP_LED_NUM_1_IO, APP_IO_PIN_SET);
+            app_io_write_pin(APP_LED_IO_TYPE, APP_LED_NUM_1_IO, APP_IO_PIN_RESET);
             break;
 
         default:

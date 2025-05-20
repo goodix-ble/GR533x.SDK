@@ -126,14 +126,15 @@ typedef enum
 typedef enum
 {
     PACKAGE_NONE         = 0xFFFF,  /**< Package unused. */
-    PACKAGE_GR5332CENI   = 0x0200,  /**< GR5332CENI (QFN48, 85°C, 512K Flash, 96K SRAM).  */
-    PACKAGE_GR5332CENE   = 0x0201,  /**< GR5332CENE (QFN48, 105°C, 512K Flash, 96K SRAM). */
-    PACKAGE_GR5332AENI   = 0x0202,  /**< GR5332AENI (QFN32, 85°C, 512K Flash, 96K SRAM).  */
-    PACKAGE_GR5332AENE   = 0x0203,  /**< GR5332AENE (QFN32, 105°C, 512K Flash, 96K SRAM). */
-    PACKAGE_GR5331CENI   = 0x0204,  /**< GR5332CENI (QFN48, 85°C, 512K Flash, 96K SRAM).  */
-    PACKAGE_GR5331AENI   = 0x0205,  /**< GR5332AENI (QFN32, 85°C, 512K Flash, 96K SRAM).  */
-    PACKAGE_GR5330ACNI   = 0x0206,  /**< GR5332ACNI (QFN32, 85°C, 256 Flash, 64K SRAM).   */
-    PACKAGE_GR5330AENI   = 0x0207,  /**< GR5332AENI (QFN32, 85°C, 512 Flash, 64K SRAM).   */
+    PACKAGE_GR5332CENI   = 0x0200,  /**< (QFN48, 85Centigrade, 512KB Flash, 96K SRAM).  */
+    PACKAGE_GR5332CENE   = 0x0201,  /**< (QFN48, 105Centigrade, 512KB Flash, 96K SRAM). */
+    PACKAGE_GR5332AENI   = 0x0202,  /**< (QFN32, 85Centigrade, 512KB Flash, 96K SRAM).  */
+    PACKAGE_GR5332AENE   = 0x0203,  /**< (QFN32, 105Centigrade, 512KB Flash, 96K SRAM). */
+    PACKAGE_GR5331CENI   = 0x0204,  /**< (QFN48, 85Centigrade, 512KB Flash, 96K SRAM).  */
+    PACKAGE_GR5331AENI   = 0x0205,  /**< (QFN32, 85Centigrade, 512KB Flash, 96K SRAM).  */
+    PACKAGE_GR5330ACNI   = 0x0206,  /**< (QFN32, 85Centigrade, 256B Flash, 64K SRAM).   */
+    PACKAGE_GR5330AENI   = 0x0207,  /**< (QFN32, 85Centigrade, 512B Flash, 64K SRAM).   */
+    PACKAGE_GR5331DEBI   = 0x0208,  /**< (BGA45, 85Centigrade, 512B Flash, 96K SRAM).   */
 } package_type_t;
 
 /**@brief package type. */
@@ -352,7 +353,7 @@ void sys_security_data_use_present(uint32_t addr, uint8_t *input, uint32_t size,
  * @brief Get the RF trim information.
  *
  * @param[out] p_rf_trim: The pointer to struct of @ref rf_trim_info_t.
- * 
+ *
  * @return Result of get.
  *****************************************************************************************
  */
@@ -423,6 +424,7 @@ uint16_t sys_device_addr_get(uint8_t *p_device_addr);
  *****************************************************************************************
  */
 uint16_t sys_hw_version_get(hw_version_type_t *p_hw_version);
+bool sys_hw_version_is_B3(void);
 
 /**
  *****************************************************************************************
@@ -467,6 +469,7 @@ uint16_t sys_device_sram_get(sram_size_t *p_sram_size);
  *****************************************************************************************
  */
 uint16_t sys_device_package_get(package_type_t *p_package_type);
+bool sys_device_is_PACKAGE_GR5331DEBI(void);
 
 /**
  *****************************************************************************************

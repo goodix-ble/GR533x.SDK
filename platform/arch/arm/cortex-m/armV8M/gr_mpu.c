@@ -10,103 +10,59 @@
   *
   *  @verbatim
   ==============================================================================
-                        ##### How to use this driver #####
+                        ##### How to use MPU #####
   ==============================================================================
+    A. Configure MPU region, include start address, end address, access permission etc.
+       Up to 8 MPU regions can be configured.
+       The size of an MPU region can be any size in the granularity of 32 bytes.
+       The starting address of an MPU region can now also be in any address which is a multiple of 32 bytes.
+       Does not allow MPU regions to be overlapped.
+    B. Enable MPU.
 
-    [..]
-    *** How to configure Interrupts using CORTEX HAL driver ***
-    ===========================================================
-    [..]
-    This section provides functions allowing to configure the NVIC interrupts (IRQ).
-    The Cortex-M4 exceptions are managed by CMSIS functions.
+Example usage:
+#include "gr_mpu.h"
+void mpu_setup(void)
+{
+    mpu_region_init_t mpu_region;
+    memset((void *)&mpu_region, 0 ,sizeof(mpu_region));
+    mpu_region.enable = MPU_REGION_ENABLE;
 
-    (#) Configure the NVIC Priority Grouping using hal_nvic_set_priority_grouping() function
+    // Set address [0, 0x20000000] to read-only. Code region Writing is prohibited
+    mpu_region.number = MPU_REGION_NUMBER7;
+    mpu_region.base_address = 0;
+    mpu_region.limit_address = 0x20000000;
+    mpu_region.access_permission = MPU_REGION_ALL_RO;
+    hal_mpu_config_region(&mpu_region);
 
-     (#)  Configure the priority of the selected IRQ Channels using hal_nvic_set_priority()
+    hal_mpu_enable(MPU_PRIVILEGED_DEFAULT);
 
-     (#)  Enable the selected IRQ Channels using hal_nvic_enable_irq()
-
-
-     -@- When the NVIC_PRIORITYGROUP_0 is selected, IRQ pre-emption is no more possible.
-         The pending IRQ priority will be managed only by the sub priority.
-
-     -@- IRQ priority order (sorted by highest to lowest priority):
-        (+@) Lowest pre-emption priority
-        (+@) Lowest sub priority
-        (+@) Lowest hardware priority (IRQ number)
-
-    [..]
-    *** How to configure Systick using CORTEX HAL driver ***
-    ========================================================
-    [..]
-    Setup SysTick Timer for time base
-
-   (+) The hal_systick_config() function calls the systick_config() function which
-       is a CMSIS function that:
-        (++) Configures the SysTick Reload register with value passed as function parameter.
-        (++) Configures the SysTick IRQ priority to the lowest value (0x0FU).
-        (++) Resets the SysTick Counter register.
-        (++) Configures the SysTick Counter clock source to be Core Clock Source (HCLK).
-        (++) Enables the SysTick Interrupt.
-        (++) Starts the SysTick Counter.
-
-   (+) You can change the SysTick Clock source to be HCLK_Div8 by calling the macro
-       __HAL_CORTEX_SYSTICKCLK_CONFIG(SYSTICK_CLKSOURCE_REFCLK) just after the
-       hal_systick_config() function call. The __HAL_CORTEX_SYSTICKCLK_CONFIG() macro is defined
-       inside the gr5xx_hal_cortex.h file.
-
-   (+) You can change the SysTick IRQ priority by calling the
-       hal_nvic_set_priority(SysTick_IRQn,...) function just after the hal_systick_config() function
-       call. The hal_nvic_set_priority() call the nvic_set_priority() function which is a CMSIS function.
-
-   (+) To adjust the SysTick time base, use the following formula:
-
-       Reload Value = SysTick Counter Clock (Hz) x  Desired Time base (s)
-       (++) Reload Value is the parameter to be passed for hal_systick_config() function
-       (++) Reload Value should not exceed 0xFFFFFF
-
+    // Add stack limit checking(check stack overflow)
+#if defined ( __CC_ARM ) || defined(__ARMCC_VERSION)
+    extern uint32_t Image$$ARM_LIB_STACK$$ZI$$Base;
+    uint32_t msp_min_addr = (uint32_t )&Image$$ARM_LIB_STACK$$ZI$$Base;
+#elif defined ( __ICCARM__ )
+    uint32_t msp_min_addr = (uint32_t )&__section_begin("CSTACK");
+#elif defined ( __GNUC__ )
+    extern char* __StackLimit;
+    uint32_t msp_min_addr = (uint32_t)&__StackLimit;
+#else
+   #error "Not Support Other Compiler"
+#endif
+    SCB->CCR |= SCB_CCR_STKOFHFNMIGN_Msk; // Allows HardFault and NMI handlers to bypass stack limit checks
+    __set_MSPLIM(msp_min_addr);
+}
   @endverbatim
   */
-
-/*
-  Additional Tables: CORTEX_NVIC_Priority_Table
-     The table below gives the allowed values of the pre-emption priority and subpriority according
-     to the Priority Grouping configuration performed by hal_nvic_set_priority_grouping() function
-       ==========================================================================================================================
-         NVIC_PriorityGroup   | NVIC_IRQChannelPreemptionPriority | NVIC_IRQChannelSubPriority  |       Description
-       ==========================================================================================================================
-        NVIC_PRIORITYGROUP_0  |                0                  |            0U-255           | 0 bits for pre-emption priority
-                              |                                   |                             | 8 bits for subpriority
-       --------------------------------------------------------------------------------------------------------------------------
-        NVIC_PRIORITYGROUP_1  |                0U-1               |            0U-127           | 1 bits for pre-emption priority
-                              |                                   |                             | 7 bits for subpriority
-       --------------------------------------------------------------------------------------------------------------------------
-        NVIC_PRIORITYGROUP_2  |                0U-3               |            0U-63            | 2 bits for pre-emption priority
-                              |                                   |                             | 6 bits for subpriority
-       --------------------------------------------------------------------------------------------------------------------------
-        NVIC_PRIORITYGROUP_3  |                0U-7               |            0U-31            | 3 bits for pre-emption priority
-                              |                                   |                             | 5 bits for subpriority
-       --------------------------------------------------------------------------------------------------------------------------
-        NVIC_PRIORITYGROUP_4  |                0U-15              |            0U-15            | 4 bits for pre-emption priority
-                              |                                   |                             | 4 bits for subpriority
-       --------------------------------------------------------------------------------------------------------------------------
-        NVIC_PRIORITYGROUP_5  |                0U-31              |            0U-7             | 5 bits for pre-emption priority
-                              |                                   |                             | 3 bits for subpriority
-       --------------------------------------------------------------------------------------------------------------------------
-        NVIC_PRIORITYGROUP_6  |                0U-63              |            0U-3             | 6 bits for pre-emption priority
-                              |                                   |                             | 2 bits for subpriority
-       --------------------------------------------------------------------------------------------------------------------------
-        NVIC_PRIORITYGROUP_7  |                0U-127             |            0U-1             | 7 bits for pre-emption priority
-                              |                                   |                             | 1 bits for subpriority
-       ==========================================================================================================================
-
-*/
 
 /* Includes ------------------------------------------------------------------*/
 
 #include "gr5x.h"
 #include "gr_common.h"
 #include "gr_mpu.h"
+#include "custom_config.h"
+#if (CFG_APP_DRIVER_SUPPORT == 1)
+#include "app_pwr_mgmt.h"
+#endif
 
 /** @addtogroup HAL_DRIVER
   * @{
@@ -219,6 +175,83 @@ __WEAK uint32_t hal_systick_config(uint32_t ticks)
 
 #if (__MPU_PRESENT == 1U)
 
+#define MPU_REGION_NUM   8U
+
+/**
+  * @brief MPU retention region register definition
+  */
+typedef struct
+{
+    uint32_t RBAR;     /*!< Region Base Address Register value */
+    uint32_t RLAR;     /*!< Region Limit Address Register value */
+} mpu_region_reg_t;
+
+/**
+  * @brief MPU retention register definition
+  */
+typedef struct
+{
+    uint32_t ctrl;                         /* MPU Control Register value */
+    mpu_region_reg_t reg[MPU_REGION_NUM];  /* MPU Region Register value */
+    uint32_t mair0;                        /* MPU Memory Attribute Indirection Register 0 */
+    uint32_t mair1;                        /* MPU Memory Attribute Indirection Register 1 */
+} mpu_retention_t;
+
+static mpu_retention_t s_mpu_retention;
+
+#if (CFG_APP_DRIVER_SUPPORT == 1)
+static bool mpu_is_allow_sleep(void)
+{
+    hal_mpu_suspend_reg();
+    return true;
+}
+
+static const app_sleep_callbacks_t s_mpu_sleep_cb =
+{
+    .app_prepare_for_sleep = mpu_is_allow_sleep,
+    .app_wake_up_ind       = hal_mpu_resume_reg,
+};
+#endif
+
+__WEAK void hal_mpu_suspend_reg(void)
+{
+    s_mpu_retention.ctrl = MPU->CTRL;
+    s_mpu_retention.mair0 = MPU->MAIR0;
+    s_mpu_retention.mair1 = MPU->MAIR1;
+    for (uint32_t i = 0; i < MPU_REGION_NUM; i++)
+    {
+        MPU->RNR = i;
+        s_mpu_retention.reg[i].RBAR = MPU->RBAR;
+        s_mpu_retention.reg[i].RLAR = MPU->RLAR;
+    }
+}
+
+__WEAK void hal_mpu_resume_reg(void)
+{
+    for (uint32_t i = 0; i < MPU_REGION_NUM; i++)
+    {
+        MPU->RNR = i;
+        MPU->RBAR = s_mpu_retention.reg[i].RBAR;
+        MPU->RLAR = s_mpu_retention.reg[i].RLAR;
+    }
+    MPU->MAIR0 = s_mpu_retention.mair0;
+    MPU->MAIR1 = s_mpu_retention.mair1;
+    MPU->CTRL  = s_mpu_retention.ctrl;
+}
+
+#ifdef HAL_PM_ENABLE
+__WEAK hal_pm_status_t hal_pm_mpu_suspend(void)
+{
+    hal_mpu_suspend_reg();
+    return HAL_PM_SLEEP;
+}
+
+__WEAK void hal_pm_mpu_resume(void)
+{
+    hal_mpu_resume_reg();
+}
+#endif /* HAL_PM_ENABLE */
+
 __WEAK void hal_mpu_enable(uint32_t mpu_control)
 {
     __DMB(); /* Data Memory Barrier operation to force any outstanding writes to memory before enabling the MPU */
@@ -226,25 +259,30 @@ __WEAK void hal_mpu_enable(uint32_t mpu_control)
     /* Enable the MPU */
     MPU->CTRL   = mpu_control | MPU_CTRL_ENABLE_Msk;
 
-    /* Enable fault exceptions */
-    SCB->SHCSR |= SCB_SHCSR_MEMFAULTENA_Msk;
-
     __DSB(); /* Ensure that the subsequent instruction is executed only after the write to memory */
     __ISB(); /* Flush and refill pipeline with updated MPU configuration settings */
+
+    /* MPU support sleep */
+#if (CFG_APP_DRIVER_SUPPORT == 1)
+    pwr_register_sleep_cb(&s_mpu_sleep_cb, WAKEUP_PRIORITY_LOW, MPU_PWR_ID);
+#else
+    /* Call hal_pm_mpu_resume/suspend in hal_pm_resume/suspend_user */
+#endif
 }
 
 __WEAK void hal_mpu_disable(void)
 {
     __DMB(); /* Force any outstanding transfers to complete before disabling MPU */
 
-    /* Disable fault exceptions */
-    SCB->SHCSR &= ~SCB_SHCSR_MEMFAULTENA_Msk;
-
     /* Disable the MPU */
     MPU->CTRL  &= ~MPU_CTRL_ENABLE_Msk;
 
     __DSB(); /* Ensure that the subsequent instruction is executed only after the write to memory */
     __ISB(); /* Flush and refill pipeline with updated MPU configuration settings */
+
+#if (CFG_APP_DRIVER_SUPPORT == 1)
+    pwr_unregister_sleep_cb(MPU_PWR_ID);
+#endif
 }
 
 __WEAK void hal_mpu_config_region(mpu_region_init_t *p_mpu_region_init)

@@ -47,24 +47,19 @@
  * LOCAL FUNCTIONS DECLARATION
  ****************************************************************************************
  */
- 
 static void status_handle(const mesh_model_msg_ind_t *p_rx_msg,  void *p_args);
 static void target_status_handle(const mesh_model_msg_ind_t *p_rx_msg,  void *p_args);
 static void hue_status_handle(const mesh_model_msg_ind_t *p_rx_msg,  void *p_args);
 static void stt_status_handle(const mesh_model_msg_ind_t *p_rx_msg,  void *p_args);
 static void dft_status_handle(const mesh_model_msg_ind_t *p_rx_msg,  void *p_args);
 static void range_status_handle(const mesh_model_msg_ind_t *p_rx_msg,  void *p_args);
-
-
 static void light_HSL_client_rx_cb(mesh_model_msg_ind_t *p_model_msg, void *p_args);
-static void light_HSL_client_sent_cb(mesh_model_msg_sent_ind_t *p_sent, void *p_args);
-
+static void light_HSL_client_sent_cb(mesh_model_msg_sent_ind_t *p_sent, void *p_args, void *p_buf);
 
 /*
  * LOCAL VARIABLES
  ****************************************************************************************
  */
-
 static const uint16_t light_HSL_client_opcode_list[] =
 {
     LIGHT_HSL_OPCODE_STATUS,
@@ -106,7 +101,6 @@ static mesh_model_register_info_t light_HSL_client_register_info =
  * LOCAL FUNCTIONS
  ****************************************************************************************
  */
-
 static void status_handle(const mesh_model_msg_ind_t *p_rx_msg,  void *p_args)
 {
     light_HSL_client_t * p_client = (light_HSL_client_t *) p_args;
@@ -367,10 +361,10 @@ static void light_HSL_client_rx_cb(mesh_model_msg_ind_t *p_model_msg, void *p_ar
     }
 }
 
-static void light_HSL_client_sent_cb(mesh_model_msg_sent_ind_t *p_sent, void *p_args)
+static void light_HSL_client_sent_cb(mesh_model_msg_sent_ind_t *p_sent, void *p_args, void *p_buf)
 {
     light_HSL_client_t * p_client = (light_HSL_client_t *) p_args;
-    
+
     switch(p_sent->tx_hdl - p_client->model_instance_index * LIGHT_HSL_CLIENT_TX_HDL_TOTAL)
     {
         case LIGHT_HSL_CLIENT_GET_SEND_TX_HDL:

@@ -806,7 +806,7 @@
                 <option>
                     <name>IlinkAdditionalLibs</name>
                     <state>$PROJ_DIR$\..\..\..\..\..\platform\soc\linker\iar\ble_sdk.a</state>
-                    <state>$PROJ_DIR$\..\..\..\..\..\platform\soc\linker\iar\mesh.a</state>
+                    <state>$PROJ_DIR$\..\..\..\..\..\components\mesh\lib\iar\mesh.a</state>
                     <state>$PROJ_DIR$\..\..\..\..\..\components\libraries\app_crypto\iar\app_crypto.a</state>
                 </option>
                 <option>

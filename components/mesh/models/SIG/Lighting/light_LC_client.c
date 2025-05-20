@@ -49,14 +49,11 @@
  * LOCAL FUNCTIONS DECLARATION
  ****************************************************************************************
  */
- 
 static void lc_mode_status_handle(const mesh_model_msg_ind_t *p_rx_msg,  void *p_args);
 static void lc_loo_status_handle(const mesh_model_msg_ind_t *p_rx_msg,  void *p_args);
 static void lc_property_status_handle(const mesh_model_msg_ind_t *p_rx_msg,  void *p_args);
-
-
 static void light_lc_client_rx_cb(mesh_model_msg_ind_t *p_model_msg, void *p_args);
-static void light_lc_client_sent_cb(mesh_model_msg_sent_ind_t *p_sent, void *p_args);
+static void light_lc_client_sent_cb(mesh_model_msg_sent_ind_t *p_sent, void *p_args, void *p_buf);
 
 /*
  * LOCAL VARIABLES
@@ -99,7 +96,6 @@ static mesh_model_register_info_t light_lc_client_register_info =
  * LOCAL FUNCTIONS
  ****************************************************************************************
  */
-
 static void lc_mode_status_handle(const mesh_model_msg_ind_t *p_rx_msg,  void *p_args)
 {
     light_lc_client_t * p_client = (light_lc_client_t *) p_args;
@@ -247,10 +243,10 @@ static void light_lc_client_rx_cb(mesh_model_msg_ind_t *p_model_msg, void *p_arg
     }
 }
 
-static void light_lc_client_sent_cb(mesh_model_msg_sent_ind_t *p_sent, void *p_args)
+static void light_lc_client_sent_cb(mesh_model_msg_sent_ind_t *p_sent, void *p_args, void *p_buf)
 {
     light_lc_client_t * p_client = (light_lc_client_t *) p_args;
-    
+
     switch(p_sent->tx_hdl - p_client->model_instance_index * LIGHT_LC_CLIENT_TX_HDL_TOTAL)
     {
         case LIGHT_LC_CLIENT_GET_SEND_TX_HDL:

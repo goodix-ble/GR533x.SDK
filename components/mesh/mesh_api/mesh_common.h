@@ -182,7 +182,6 @@ typedef enum
     MESH_MODEL_CONFIG_TYPE_BINDING,     /**< Model binding config type. */
     MESH_MODEL_CONFIG_TYPE_PUBLISH,     /**< Model publish config type. */
     MESH_MODEL_CONFIG_TYPE_SUBSCRIBE,   /**< Model subscribe config type. */
-    MESH_MODEL_CONFIG_TYPE_INVALID,     /**< Invalid model subscribe config. */
 } mesh_model_config_type_t;
 
 /**
@@ -233,6 +232,27 @@ typedef enum
     MESH_PROVEE_STATE_BEING_PROV,       /**< The node is being provisioned. */
     MESH_PROVEE_STATE_PROV              /**< The node has been provisioned or provision successed. */
 } mesh_provee_state_t;
+
+/**
+ * @brief Mesh address types
+ */
+typedef enum
+{
+    MESH_ADDR_TYPE_IDENTITY,     /**< Public or static address. */
+    MESH_ADDR_TYPE_RPA,          /**< Rpa address.  */
+    MESH_ADDR_TYPE_NON_RPA,      /**< Non rpa address. */
+} mesh_addr_type_t;
+
+/**
+ * @brief Mesh prov info update types
+ */
+typedef enum
+{
+    MESH_PROV_INFO_UPD_TYPE_ADDR    = 1 << 0,     /**< Unicate address. */
+    MESH_PROV_INFO_UPD_TYPE_DEV_KEY = 1 << 1,     /**< Device key. */
+    MESH_PROV_INFO_UPD_TYPE_NET_KEY = 1 << 2,     /**< Net key. */
+    MESH_PROV_INFO_UPD_TYPE_APP_KEY = 1 << 3,     /**< App key. */
+} mesh_prov_info_upd_type_t;
 
 /** @} */
 
@@ -443,24 +463,29 @@ typedef struct
     uint32_t                 static_adv_duration_time;                  /**< The time of the static_adv duration(10 ms), 0 means using default config. */
 } mesh_stack_config_t;
 
+/**
+ * @brief Mesh auto provsion information structure
+ */
+typedef struct mesh_auto_prov_info
+{
+    uint16_t unicast_addr;      /**< Unicast address. */
+    uint8_t dev_key[16];        /**< Device key. */
+    uint8_t net_key[16];        /**< Network key. */
+    uint8_t app_key[16];        /**< Application key. */
+} mesh_auto_prov_info_t;
+
 /// Publication parameters structure
 typedef struct mesh_model_config_public_param
 {
-    mesh_lid_t model_lid;                           /**< Local identifier of a model. */
-    /// Publish address
-    uint16_t addr;
-    /**< Application key index. */
-    uint16_t appkey_index;
-    /// Friendship credential flag
-    uint8_t  friend_cred;
-    /// Publish TTL
-    uint8_t  ttl;
-    /// Period for periodic status publishing
-    uint8_t  period;
-    /// Retransmission parameters
-    /// Bit 0-2: Number of retransmissions for each message
-    /// Bit 3-7: Number of 50-ms steps between retransmissions
-    uint8_t  retx_params;
+    mesh_lid_t model_lid;     /**< Local identifier of a model. */
+    uint16_t publish_addr;    /**< Publish address. */
+    uint16_t appkey_index;    /**< Application key index. */
+    uint8_t  friend_cred;     /**< Friendship credential flag. */
+    uint8_t  ttl;             /**< Publish TTL. */
+    uint8_t  period;          /**< Period for periodic status publishing. */
+    uint8_t  retx_params;     /**< Retransmission parameters.  */
+                              /**< Bit 0-2: Number of retransmissions for each message.  */
+                              /**< Bit 0-2: Bit 3-7: Number of 50-ms steps between retransmissions.  */
 } mesh_model_config_public_param_t;
 
 /**
@@ -614,6 +639,43 @@ mesh_error_t mesh_stack_init(mesh_stack_config_t *p_stack_config, mesh_callback_
 
 /**
  ****************************************************************************************
+ * @brief Mesh auto provision information set.
+ *
+ * @param[in] p_auto_prov_info      Pointer to the auto provison information.
+ *
+ * @retval ::MESH_ERROR_NO_ERROR           Operation is successful.
+ * @retval ::MESH_ERROR_SDK_INVALID_PARAM  Invalid parameter. The parameter p_auto_prov_info is NULL.
+ ****************************************************************************************
+ */
+mesh_error_t mesh_auto_prov_info_set(mesh_auto_prov_info_t *p_auto_prov_info);
+
+/**
+ ****************************************************************************************
+ * @brief Mesh auto provision information get.
+ *
+ * @param[out] p_auto_prov_info      Pointer to the auto provison information.
+ *
+ * @retval ::MESH_ERROR_NO_ERROR           Operation is successful.
+ * @retval ::MESH_ERROR_SDK_INVALID_PARAM  Invalid parameter. The parameter p_auto_prov_info is NULL.
+ ****************************************************************************************
+ */
+mesh_error_t mesh_auto_prov_info_get(mesh_auto_prov_info_t *p_auto_prov_info);
+
+/**
+ ****************************************************************************************
+ * @brief Mesh provision information update.
+ *
+ * @param[in] p_prov_info_upd      Pointer to the provison information updated.
+ * @param[in] upd_type             Update type info, @ref mesh_prov_info_upd_type_t.
+ *
+ * @retval ::MESH_ERROR_NO_ERROR           Operation is successful.
+ * @retval ::MESH_ERROR_SDK_INVALID_PARAM  Invalid parameter. The parameter p_prov_info_upd is NULL.
+ ****************************************************************************************
+ */
+mesh_error_t mesh_prov_info_update(mesh_auto_prov_info_t *p_prov_info_upd, uint16_t upd_type);
+
+/**
+ ****************************************************************************************
  * @brief Mesh stack reset
  *
  * @note This function may clear stored mesh information. Callback function will be called when mesh stack reset completes.
@@ -639,6 +701,13 @@ mesh_error_t mesh_stack_reset(bool flash_clear);
  ****************************************************************************************
  */
 mesh_error_t mesh_enable(void);
+
+/**
+ ****************************************************************************************
+ * @brief Set mesh address type, default is MESH_ADDR_TYPE_IDENTITY.
+ ****************************************************************************************
+ */
+void mesh_addr_type_set(mesh_addr_type_t addr_type);
 
 /**
  ****************************************************************************************
@@ -973,6 +1042,17 @@ void mesh_hb_pub_set(bool enable);
  ****************************************************************************************
  */
 void mesh_net_tx_param_set(uint8_t net_tx_count, uint8_t net_tx_intv);
+
+/**
+ ****************************************************************************************
+ * @brief set relay transmit param.
+ *
+ * @param[in] relay_tx_count:     Set relay transmit count(range:1~8).
+ * @param[in] relay_tx_intv:      Set relay transmit interval(unit:10ms; range:1~32).
+ *
+ ****************************************************************************************
+ */
+void mesh_relay_tx_param_set(uint8_t relay_tx_count, uint8_t relay_tx_intv);
 
 /** @} */
 

@@ -935,7 +935,7 @@ __STATIC_INLINE uint32_t ll_msio_read_output_port(msio_pad_t MSIOx)
   *         @arg @ref LL_MSIO_PIN_ALL
   * @retval None
   */
-__STATIC_INLINE void ll_msio_set_output_pin(msio_pad_t MSIOx, uint32_t pin_mask)
+__STATIC_FORCEINLINE void ll_msio_set_output_pin(msio_pad_t MSIOx, uint32_t pin_mask)
 {
     SET_BITS(AON_MSIO->MSIO_A_PAD_CFG0, (pin_mask << AON_MSIO_A_PAD_CFG0_OUT_VAL_POS) & AON_MSIO_A_PAD_CFG0_OUT_VAL);
 }
@@ -962,7 +962,7 @@ __STATIC_INLINE void ll_msio_set_output_pin(msio_pad_t MSIOx, uint32_t pin_mask)
   *         @arg @ref LL_MSIO_PIN_ALL
   * @retval None
   */
-__STATIC_INLINE void ll_msio_reset_output_pin(msio_pad_t MSIOx, uint32_t pin_mask)
+__STATIC_FORCEINLINE void ll_msio_reset_output_pin(msio_pad_t MSIOx, uint32_t pin_mask)
 {
     CLEAR_BITS(AON_MSIO->MSIO_A_PAD_CFG0, (pin_mask << AON_MSIO_A_PAD_CFG0_OUT_VAL_POS) & AON_MSIO_A_PAD_CFG0_OUT_VAL);
 }
@@ -989,7 +989,7 @@ __STATIC_INLINE void ll_msio_reset_output_pin(msio_pad_t MSIOx, uint32_t pin_mas
   *         @arg @ref LL_MSIO_PIN_ALL
   * @retval None
   */
-__STATIC_INLINE void ll_msio_toggle_pin(msio_pad_t MSIOx, uint32_t pin_mask)
+__STATIC_FORCEINLINE void ll_msio_toggle_pin(msio_pad_t MSIOx, uint32_t pin_mask)
 {
     WRITE_REG(AON_MSIO->MSIO_A_PAD_CFG0, (READ_REG(AON_MSIO->MSIO_A_PAD_CFG0) ^ ((pin_mask << AON_MSIO_A_PAD_CFG0_OUT_VAL_POS) & AON_MSIO_A_PAD_CFG0_OUT_VAL)));
 }

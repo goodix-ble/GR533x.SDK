@@ -131,18 +131,9 @@
 #define BLE_APPEARANCE_OUTDOOR_SPORTS_ACT_LOC_POD          5187     /**< Location Pod (Outdoor Sports Activity subtype). */
 #define BLE_APPEARANCE_OUTDOOR_SPORTS_ACT_LOC_AND_NAV_POD  5188     /**< Location and Navigation Pod (Outdoor Sports Activity subtype). */
 
-/**@defgroup BLE_GAP_PHYS GAP PHYs (bitmask)
- * @{ */
-#define BLE_GAP_PHY_ANY       0x00     /**< No preferred PHY. */
-#define BLE_GAP_PHY_LE_1MBPS  (1 << 0) /**< LE 1M PHY preferred for an active link. */
-#define BLE_GAP_PHY_LE_2MBPS  (1 << 1) /**< LE 2M PHY preferred for an active link. */
-#define BLE_GAP_PHY_LE_CODED  (1 << 2) /**< LE Coded PHY preferred for an active link. */
-/**@} */
-
-
 /**@defgroup BLE_GAP_ADV_CHANNEL GAP ADV CHANNEL (bitmask)
  * @{ */
-#define BLE_GAP_ADV_CHANNEL_37              0x01 /**< Advertising Channel 37 (2402MHz). */ 
+#define BLE_GAP_ADV_CHANNEL_37              0x01 /**< Advertising Channel 37 (2402MHz). */
 #define BLE_GAP_ADV_CHANNEL_38              0x02 /**< Advertising Channel 38 (2426MHz). */
 #define BLE_GAP_ADV_CHANNEL_39              0x04 /**< Advertising Channel 39 (2480MHz). */
 #define BLE_GAP_ADV_CHANNEL_37_38_39        0x07 /**< Advertising Channel 37, 38, 39. */
@@ -169,9 +160,9 @@ typedef enum
  */
 typedef enum
 {
-   BLE_GAP_OWN_ADDR_STATIC = 0,   /**< Public or Private Static Address according to device address configuration. */
-   BLE_GAP_OWN_ADDR_GEN_RSLV,     /**< Generated resolvable private random address. */
-   BLE_GAP_OWN_ADDR_GEN_NON_RSLV, /**< Generated non-resolvable private random address. */
+   BLE_GAP_OWN_ADDR_STATIC = 0,     /**< Public or Private Static Address according to device address configuration. */
+   BLE_GAP_OWN_ADDR_GEN_RSLV,       /**< Generated resolvable private random address. */
+   BLE_GAP_OWN_ADDR_GEN_NON_RSLV,   /**< Generated non-resolvable private random address. */
 } ble_gap_own_addr_t;
 
 /**
@@ -782,11 +773,21 @@ typedef struct
 typedef struct
 {
     uint8_t      num;                   /**< Number of bonded device. */
-    ble_gap_bdaddr_t *items;                /**< Bonded device addr info. */
+    ble_gap_bdaddr_t *items;            /**< Bonded device addr info for peer. */
 } ble_gap_bond_dev_list_t;
 
 /**
- * @brief White list 
+ * @brief Bonded device list with local addr
+ */
+typedef struct
+{
+    uint8_t      num;                   /**< Number of bonded device. */
+    ble_gap_bdaddr_t *peer_items;       /**< Bonded device addr info for peer. */
+    ble_gap_bdaddr_t *local_items;      /**< Bonded device addr info for local. */
+} ble_gap_bond_dev_list_with_local_addr_t;
+
+/**
+ * @brief White list
  */
 typedef struct
 {
@@ -951,14 +952,18 @@ uint16_t ble_gap_addr_get(ble_gap_bdaddr_t *p_addr);
 
 /**
  ****************************************************************************************
- * @brief Set the tx power
+ * @brief Set the tx power.
  *
  * @param[in] role: Select the role to set tx power. @ref ble_gap_actv_role_t for possible roles.
  * @param[in] index: The idx parameter is interpreted on role.
  *              -If role is @ref BLE_GAP_ACTIVITY_ROLE_ADV, it's the index of Advertising.
  *              -If role is @ref BLE_GAP_ACTIVITY_ROLE_CON, it's the index of connection.
  *              -For all other roles, it should be ignored.
- * @param[in] txpwr_dbm: The value of the tx power, Range: -127dbm to 127dbm.
+ * @param[in] txpwr_dbm: Tx power, unit(dBm).
+ *                       GR5332: BLE_RF_TX_MODE_SPA_MODE support value:[-20, -15, -10, -8, -5, 0, 1, 2, 3, 4, 5]
+ *                       GR5332: BLE_RF_TX_MODE_HPA_MODE support value:[-10, -9, -3, 0, 4, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+ *                       GR5330/GR5331: BLE_RF_TX_MODE_SPA_MODE support value:[-20, -15, -10, -5, -2, 0, 2, 3, 4, 5, 6]
+ *                       GR5330/GR5331: BLE_RF_TX_MODE_UPA_MODE support value:[-15, -10, -6, -4, -2, 0, 1, 2]
  *
  * @retval SDK_SUCCESS: Operation is Success.
  * @retval SDK_ERR_INVALID_CONN_IDX: Invalid connection index supplied.
@@ -970,14 +975,18 @@ uint16_t ble_gap_tx_power_set(ble_gap_actv_role_t role, uint8_t index, int8_t tx
 
 /**
  ****************************************************************************************
- * @brief Get the tx power
+ * @brief Get the tx power.
  *
  * @param[in] role: Select the role to Get tx power. @ref ble_gap_actv_role_t for possible roles.
  * @param[in] index: The idx parameter is interpreted on role.
  *                   If role is @ref BLE_GAP_ACTIVITY_ROLE_ADV, it's the index of Advertising.
  *                   If role is @ref BLE_GAP_ACTIVITY_ROLE_CON, it's the index of connection.
  *                   For all other roles, it should be ignored.
- * @param[in] txpwr_dbm: The value of the tx power, Range: -127dbm to 128dbm.
+ * @param[out] txpwr_dbm: Tx power, unit(dBm).
+ *                        GR5332: BLE_RF_TX_MODE_SPA_MODE support value:[-20, -15, -10, -8, -5, 0, 1, 2, 3, 4, 5]
+ *                        GR5332: BLE_RF_TX_MODE_HPA_MODE support value:[-10, -9, -3, 0, 4, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+ *                        GR5330/GR5331: BLE_RF_TX_MODE_SPA_MODE support value:[-20, -15, -10, -5, -2, 0, 2, 3, 4, 5, 6]
+ *                        GR5330/GR5331: BLE_RF_TX_MODE_UPA_MODE support value:[-15, -10, -6, -4, -2, 0, 1, 2]
  *
  * @retval SDK_SUCCESS: Operation is Success.
  * @retval SDK_ERR_INVALID_CONN_IDX: Invalid connection index supplied.
@@ -1014,6 +1023,29 @@ uint16_t ble_gap_privacy_params_set(uint16_t renew_dur, bool enable_flag);
 
 /**
  ****************************************************************************************
+ * @brief Set privacy auto renew device address enable or disable, if needed.
+ *
+ * @param[in] enable: If true, stack would auto renew device address when renew duration tiemout.
+ *                    If false, stack would not auto renew device address.
+ ****************************************************************************************
+ */
+void ble_gap_privacy_auto_renew_addr_set(bool enable);
+
+/**
+ ****************************************************************************************
+ * @brief Set advertising rpa, can be called before advertising start.
+ *
+ * @param[in] adv_idx: Advertising index, range is 0 to 4.
+ * @param[in] rpa:     Pointer to rpa set.
+ *
+ * @retval SDK_SUCCESS: Operation is successful.
+ * @retval SDK_ERR_INVALID_PARAM: Invalid parameter supplied.
+ ****************************************************************************************
+ */
+uint16_t ble_gap_adv_rpa_rotate(uint8_t adv_idx, uint8_t rpa[BLE_GAP_ADDR_LEN]);
+
+/**
+ ****************************************************************************************
  * @brief Set suggested default LE data length.
  *
  * @param[in] sugg_max_tx_octet: Suggested value for the Controller's maximum transmitted number of payload octets to be used, the range is 27~251.
@@ -1046,8 +1078,8 @@ uint16_t ble_gap_l2cap_params_set(uint16_t max_mtu,uint16_t max_mps,uint8_t max_
  ****************************************************************************************
  * @brief Set the preferred values for the transmitter PHY and receiver PHY.
  *
- * @param[in] tx_pref_phy: A bit field that indicates the transmitter PHYs that the Host prefers the Controller to use(see @ref BLE_GAP_PHYS).
- * @param[in] rx_pref_phy: A bit field that indicates the receiver PHYs that the Host prefers the Controller to use(see @ref BLE_GAP_PHYS).
+ * @param[in] tx_pref_phy: A bit field that indicates the transmitter PHYs that the Host prefers the Controller to use(see @ref ble_gap_phy_bit_t).
+ * @param[in] rx_pref_phy: A bit field that indicates the receiver PHYs that the Host prefers the Controller to use(see @ref ble_gap_phy_bit_t).
  ****************************************************************************************
  */
 void ble_gap_pref_phy_set(uint8_t tx_pref_phy, uint8_t rx_pref_phy);
@@ -1109,6 +1141,23 @@ uint16_t ble_gap_bond_devs_get(ble_gap_bond_dev_list_t *p_bond_list, uint8_t max
 
 /**
  ****************************************************************************************
+ * @brief Get all bonded devices.
+ *
+ * @param[in] p_bond_list: Pointer to the bond list.
+ * @param[in] max_num: max number of bond devices can be gotten.
+ *
+ * @retval SDK_SUCCESS: Operation is successful.
+ * @retval SDK_ERR_SDK_INTERNAL: SDK internal error.
+ * @retval SDK_ERR_NVDS_NOT_INIT: NVDS is not initiated.
+ * @retval SDK_ERR_LIST_ITEM_NOT_FOUND: Item not found in list.
+ * @retval SDK_ERR_LIST_FULL: List is full.
+ * @retval SDK_ERR_POINTER_NULL: Invalid pointer supplied.
+ ****************************************************************************************
+ */
+uint16_t ble_gap_bond_devs_get_with_local_addr(ble_gap_bond_dev_list_with_local_addr_t *p_bond_list, uint8_t max_num);
+
+/**
+ ****************************************************************************************
  * @brief Clear all bonded devices.
  *
  * @retval SDK_SUCCESS: Operation is successful.
@@ -1135,6 +1184,23 @@ uint16_t ble_gap_bond_devs_clear(void);
  ****************************************************************************************
  */
 uint16_t ble_gap_bond_dev_del(const ble_gap_bdaddr_t *p_peer_addr);
+
+/**
+ ****************************************************************************************
+ * @brief Delete a bond device with the specified BD address.
+ *
+ * @param[in] p_peer_addr: Pointer to the peer addrss.
+ * @param[in] p_local_addr: Pointer to the local addrss.
+ *
+ * @retval SDK_SUCCESS: Operation is successful.
+ * @retval SDK_ERR_SDK_INTERNAL: SDK internal error.
+ * @retval SDK_ERR_NVDS_NOT_INIT: NVDS is not initiated.
+ * @retval SDK_ERR_LIST_ITEM_NOT_FOUND: Item not found in list.
+ * @retval SDK_ERR_LIST_FULL: List is full.
+ * @retval SDK_ERR_POINTER_NULL: Invalid pointer supplied.
+ ****************************************************************************************
+ */
+uint16_t ble_gap_bond_dev_del_with_local_addr(const ble_gap_bdaddr_t *p_peer_addr, const ble_gap_bdaddr_t *p_local_addr);
 
 /**
  ****************************************************************************************

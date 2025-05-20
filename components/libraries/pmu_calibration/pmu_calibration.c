@@ -60,7 +60,7 @@ static uint8_t s_pmu_timer_cb_count = 0;
  */
 void pmu_timer_handler(void* p_arg)
 {
-    pmu_calibration_handler(p_arg);
+    pmu_and_clock_calibration_handler(p_arg);
 
     if (s_pmu_timer_cb_count > 0)
     {

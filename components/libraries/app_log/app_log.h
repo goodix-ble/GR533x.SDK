@@ -46,6 +46,7 @@
 #endif
 #include <stdint.h>
 #include <stdbool.h>
+#include <stdarg.h>
 
 /**
  * @defgroup APP_LOG_MAROC Defines
@@ -67,6 +68,11 @@
 #define APP_LOG_TAG_ENABLE              0                          /**< Enable app log tag. */
 #endif
 
+#ifndef APP_LOG_HEX_DUMP_RAW_DATA_ENABLE
+// If APP_LOG_HEX_DUMP_RAW_DATA_ENABLE=1, then calling APP_LOG_RAW_INFO/app_log_hex_dump will not add extra information (parse to ASCII), but will directly print the raw data.
+#define APP_LOG_HEX_DUMP_RAW_DATA_ENABLE  0                        /**< Enable app log hex dump raw data. */
+#endif
+
 #define APP_LOG_LOCK()                  LOCAL_INT_DISABLE(BLE_IRQn) /**< App log lock. */
 #define APP_LOG_UNLOCK()                LOCAL_INT_RESTORE()         /**< APP log unlock. */
 
@@ -74,8 +80,12 @@
     #define APP_LOG_TAG                 "NO_TAG"                   /**< Default app log tag. */
 #endif
 
+#ifndef APP_LOG_LINE_BUF_SIZE
 #define APP_LOG_LINE_BUF_SIZE           256                        /**< Buffer size for every line's log. */
+#endif
+#ifndef APP_LOG_PER_LINE_HEX_DUMP_SIZE
 #define APP_LOG_PER_LINE_HEX_DUMP_SIZE  8                          /**< Hex char dump size in per line. */
+#endif
 #define APP_LOG_SEVERITY_LEVEL          APP_LOG_LVL_DEBUG          /**< Default log severity level. */
 #define APP_LOG_TAG_LEN_MAX             20                         /**< Maximum length of output filter's tag. */
 #define APP_LOG_LINE_NB_LEN_MAX         5                          /**< Maximum length of output line number. */
@@ -212,7 +222,7 @@ void app_log_assert_flush_init(app_log_assert_flush_func_t assert_flush_func);
  * @param[in] file:  File name.
  * @param[in] func:  Funciton name.
  * @param[in] line： Line number.
- * @param[in] fomat: Output format.
+ * @param[in] format: Output format.
  * @param[in] ...:   Arguments.
  *****************************************************************************************
  */
@@ -222,11 +232,21 @@ void app_log_output(uint8_t level, const char *tag, const char *file, const char
  *****************************************************************************************
  * @brief Output RAW format log
  *
- * @param[in] fomat: Output format.
+ * @param[in] format: Output format.
  * @param[in] ...:   Arguments.
  *****************************************************************************************
  */
 void app_log_raw_info(const char *format, ...);
+
+/**
+ *****************************************************************************************
+ * @brief Output RAW format log with va_list param
+ *
+ * @param[in] format: Output format.
+ * @param[in] ap:   Arguments.
+ *****************************************************************************************
+ */
+void app_log_raw_info_va_list(const char *format, va_list ap);
 
 /**
  *****************************************************************************************

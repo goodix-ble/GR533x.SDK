@@ -140,7 +140,7 @@ typedef struct
  * @retval ::MESH_ERROR_SDK_INVALID_PARAM       Invalid parameter. The parameter p_lpn_info is NULL, or netkey_index is invalid.
  ****************************************************************************************
  */
-mesh_error_t mesh_lpn_friendship_setup(mesh_lpn_info_t* p_lpn_info, uint16_t netkey_index);
+mesh_error_t mesh_lpn_friendship_setup(mesh_lpn_info_t *p_lpn_info, uint16_t netkey_index);
 
 /**
  ****************************************************************************************

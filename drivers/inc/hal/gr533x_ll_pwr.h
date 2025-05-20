@@ -479,7 +479,7 @@ __STATIC_INLINE void ll_pwr_disable_comm_timer_power(void)
   *
   * @retval State of bit (1 or 0).
   */
-__STATIC_INLINE uint32_t ll_pwr_is_enabled_comm_timer_power(void)
+__STATIC_FORCEINLINE uint32_t ll_pwr_is_enabled_comm_timer_power(void)
 {
     return ((uint32_t)(READ_BITS(AON_PWR->COMM_TIMER_PWR_CTRL, AON_PWR_COMM_TIMER_PWR_CTRL_EN) == AON_PWR_COMM_TIMER_PWR_CTRL_EN));
 }
@@ -760,7 +760,7 @@ __STATIC_INLINE void ll_pwr_set_comm_core_wakeup_time(uint32_t time)
   *
   * @retval Clock cycles to spend in Deep Sleep Mode before waking-up the device
   */
-__STATIC_INLINE uint32_t ll_pwr_get_comm_wakeup_time(void)
+__STATIC_FORCEINLINE uint32_t ll_pwr_get_comm_wakeup_time(void)
 {
     return ((uint32_t)READ_REG(AON_CTL->COMM_TIMER_CFG0));
 }
@@ -774,7 +774,7 @@ __STATIC_INLINE uint32_t ll_pwr_get_comm_wakeup_time(void)
   *
   * @retval Sleep duration
   */
-__STATIC_INLINE uint32_t ll_pwr_get_comm_sleep_duration(void)
+__STATIC_FORCEINLINE uint32_t ll_pwr_get_comm_sleep_duration(void)
 {
     return ((uint32_t)READ_REG(AON_CTL->COMM_TIMER_STAT));
 }
@@ -823,7 +823,7 @@ __STATIC_INLINE uint32_t ll_pwr_read_comm_wakeup_timing(void)
   *
   * @retval TWOSC value
   */
-__STATIC_INLINE uint32_t ll_pwr_read_comm_wakeup_timing_twosc(void)
+__STATIC_FORCEINLINE uint32_t ll_pwr_read_comm_wakeup_timing_twosc(void)
 {
     return ((((uint32_t)READ_REG(AON_CTL->COMM_TIMER_CFG1) & AON_CTL_COMM_TIMER_CFG1_ENBPRESET_TWOSC_Msk)) >> AON_CTL_COMM_TIMER_CFG1_ENBPRESET_TWOSC_Pos);
 }

@@ -47,17 +47,14 @@
  * LOCAL FUNCTIONS DECLARATION
  ****************************************************************************************
  */
- 
 static void status_handle(const mesh_model_msg_ind_t *p_rx_msg,  void *p_args);
-
 static void generic_battery_client_rx_cb(mesh_model_msg_ind_t *p_model_msg, void *p_args);
-static void generic_battery_client_sent_cb(mesh_model_msg_sent_ind_t *p_sent, void *p_args);
+static void generic_battery_client_sent_cb(mesh_model_msg_sent_ind_t *p_sent, void *p_args, void *p_buf);
 
 /*
  * LOCAL VARIABLES
  ****************************************************************************************
  */
-
 static const uint16_t generic_battery_client_opcode_list[] =
 {
     GENERIC_BATTERY_OPCODE_STATUS,
@@ -89,7 +86,6 @@ static mesh_model_register_info_t generic_battery_client_register_info =
  * LOCAL FUNCTIONS
  ****************************************************************************************
  */
-
 static void status_handle(const mesh_model_msg_ind_t *p_rx_msg,  void *p_args)
 {
     generic_battery_client_t * p_client = (generic_battery_client_t *) p_args;
@@ -114,7 +110,6 @@ static void status_handle(const mesh_model_msg_ind_t *p_rx_msg,  void *p_args)
         p_client->settings.p_callbacks->battery_status_cb(p_client, p_rx_msg, &in_data);
     }
 }
-
 
 #ifdef MESH_MODEL_BQB_TEST
 static void message_send_create(mesh_model_send_info_t * p_msg_tx, mesh_lid_t model_lid, uint16_t company_opcode,
@@ -170,10 +165,10 @@ static void generic_battery_client_rx_cb(mesh_model_msg_ind_t *p_model_msg, void
     }
 }
 
-static void generic_battery_client_sent_cb(mesh_model_msg_sent_ind_t *p_sent, void *p_args)
+static void generic_battery_client_sent_cb(mesh_model_msg_sent_ind_t *p_sent, void *p_args, void *p_buf)
 {
     generic_battery_client_t * p_client = (generic_battery_client_t *) p_args;
-    
+
     switch(p_sent->tx_hdl - p_client->model_instance_index * GENERIC_BATTERY_CLIENT_TX_HDL_TOTAL)
     {
         case GENERIC_BATTERY_CLIENT_GET_SEND_TX_HDL:

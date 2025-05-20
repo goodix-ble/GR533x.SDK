@@ -70,6 +70,7 @@ extern int gapm_hci_handler_patch(ke_msg_id_t const msgid, void const* event, ke
 #if (CHIP_TYPE != 0) && (CFG_MUL_LINK_WITH_SAME_DEV)
 // gapm hci event for multiple link
 extern int hci_le_adv_set_term_evt_handler_patch(uint16_t opcode, void const *p_event);
+extern int hci_le_cmd_cmp_evt_adv_handler_patch(uint16_t opcode, void const *p_event);
 
 // gapc task for multiple link
 extern int gapc_bond_cfm_handler_patch(ke_msg_id_t const msgid, void *cfm,
@@ -110,6 +111,7 @@ extern int hci_le_add_dev_to_rslv_list_cmd_handler_patch(void const *param, uint
 
 #if CFG_MAX_ADVS
 extern int hci_le_set_ext_scan_rsp_data_cmd_handler_patch(void const *param, uint16_t opcode);
+extern int hci_le_set_ext_adv_en_cmd_handler_patch(void const *param, uint16_t opcode);
 #endif
 
 extern int hci_le_rmv_dev_from_rslv_list_cmd_handler_patch(void const *param, uint16_t opcode);
@@ -120,7 +122,7 @@ extern int hci_le_set_addr_resol_en_cmd_handler_patch(void const *param, uint16_
 
 extern int hci_le_set_priv_mode_cmd_handler_patch(void const *param, uint16_t opcode);
 
-#if CFG_CAR_KEY_SUPPORT
+#if CFG_SC_PAIR_SUPPORT
 extern int hci_le_rd_local_p256_public_key_cmd_handler_patch(void const *param, uint16_t opcode);
 #endif
 
@@ -130,13 +132,14 @@ llm_hci_cmd_tab_item_t llm_hci_cmd_tab[] =
     {(llm_hci_cmd_hdl_func_t)0x000126fd, (llm_hci_cmd_hdl_func_t)hci_le_add_dev_to_rslv_list_cmd_handler_patch},
     #if CFG_MAX_ADVS
     {(llm_hci_cmd_hdl_func_t)0x00015f9d, (llm_hci_cmd_hdl_func_t)hci_le_set_ext_scan_rsp_data_cmd_handler_patch},
+    {(llm_hci_cmd_hdl_func_t)0x0001573d, (llm_hci_cmd_hdl_func_t)hci_le_set_ext_adv_en_cmd_handler_patch},
     #endif
     {(llm_hci_cmd_hdl_func_t)0x00014ced, (llm_hci_cmd_hdl_func_t)hci_le_rmv_dev_from_rslv_list_cmd_handler_patch},
     {(llm_hci_cmd_hdl_func_t)0x00012b1d, (llm_hci_cmd_hdl_func_t)hci_le_clear_rslv_list_cmd_handler_patch},
     {(llm_hci_cmd_hdl_func_t)0x00014e21, (llm_hci_cmd_hdl_func_t)hci_le_set_addr_resol_en_cmd_handler_patch},
     {(llm_hci_cmd_hdl_func_t)0x00016355, (llm_hci_cmd_hdl_func_t)hci_le_set_priv_mode_cmd_handler_patch},
 
-    #if CFG_CAR_KEY_SUPPORT
+    #if CFG_SC_PAIR_SUPPORT
     {(llm_hci_cmd_hdl_func_t)0x00014641, (llm_hci_cmd_hdl_func_t)hci_le_rd_local_p256_public_key_cmd_handler_patch},
     #endif
 };
@@ -147,6 +150,7 @@ gapm_hci_evt_tab_item_t gapm_hci_evt_tab[] =
 
     #if (CHIP_TYPE != 0) && (CFG_MUL_LINK_WITH_SAME_DEV)
     {(gapm_hci_evt_hdl_func_t)0x00012991, (gapm_hci_evt_hdl_func_t)hci_le_adv_set_term_evt_handler_patch},
+    {(gapm_hci_evt_hdl_func_t)0x00012bfd, (gapm_hci_evt_hdl_func_t)hci_le_cmd_cmp_evt_adv_handler_patch},
     #endif
 };
 

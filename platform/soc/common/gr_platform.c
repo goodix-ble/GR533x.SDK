@@ -45,6 +45,8 @@
 #include "gr_plat.h"
 #include "custom_config.h"
 
+//no need BUILD_IN_APP_INFO in DTM ATE mode, remove it to reduce code size
+#ifndef DTM_ATE_ENABLE
 #if defined (__CC_ARM )
 const APP_INFO_t BUILD_IN_APP_INFO __attribute__((at(APP_INFO_ADDR))) =
 #elif (defined(__ARMCC_VERSION) && (__ARMCC_VERSION >= 6100100))
@@ -69,6 +71,7 @@ const APP_INFO_t BUILD_IN_APP_INFO __attribute__((section(".app_info"))) =
 #endif
     .reserved1        = {APP_INFO_RESERVED}
 };
+#endif
 
 __WEAK void C_CONSTRUCTOR system_platform_init(void)
 {

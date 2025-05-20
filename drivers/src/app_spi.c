@@ -135,6 +135,7 @@ static const IRQn_Type s_spi_irq[APP_SPI_ID_MAX]      = {SPI_S_IRQn, SPI_M_IRQn}
 static const uint32_t  s_spi_instance[APP_SPI_ID_MAX] = {SPIS_BASE, SPIM_BASE};
 
 spi_env_t  *p_spi_env[APP_SPI_ID_MAX];
+volatile bool g_spi_reg_resumed = false;
 
 static const app_sleep_callbacks_t spi_sleep_cb =
 {
@@ -190,7 +191,7 @@ SECTION_RAM_CODE static void spi_wake_up_ind(void)
             continue;
         }
 
-        if (p_spi_env[i]->spi_state == APP_SPI_ACTIVITY)
+        if (p_spi_env[i]->spi_state == APP_SPI_ACTIVITY && !g_spi_reg_resumed)
         {
             GLOBAL_EXCEPTION_DISABLE();
             hal_spi_resume_reg(&p_spi_env[i]->handle);

@@ -52,22 +52,22 @@
 #include "ble_error.h"
 #include <stdbool.h>
 
-/**@addtogroup BLE_SM_DEFINES Defines 
+/**@addtogroup BLE_SM_DEFINES Defines
  * @{
  */
 /**@defgroup BLE_SEC_AUTH_FLAG  SEC Auth Flag
-* @{ 
+* @{
 */
 #define BLE_SEC_AUTH_NONE               0                 /**< No auth requirement. */
 #define BLE_SEC_AUTH_BOND              (1 << 0)           /**< Bond flag. */
 #define BLE_SEC_AUTH_MITM              (1 << 2)           /**< MITM flag. */
 #define BLE_SEC_AUTH_SEC_CON           (1 << 3)           /**< Security connection flag. */
 #define BLE_SEC_AUTH_KEY_PRESS_NOTIFY  (1 << 4)           /**< Key press notify flag. */
-#define BLE_SEC_AUTH_ALL               (AUTH_BOND | AUTH_MITM | AUTH_SEC_CON | AUTH_KEY_PRESS_NOTIFY)  /**< All authentication flags are on. */
+#define BLE_SEC_AUTH_ALL               (BLE_SEC_AUTH_BOND | BLE_SEC_AUTH_MITM | BLE_SEC_AUTH_SEC_CON | BLE_SEC_AUTH_KEY_PRESS_NOTIFY)  /**< All authentication flags are on. */
 /**@} */
 
 /**@defgroup BLE_SEC_KEY_DIST_FLAG  SEC Key Distribution Flag
-* @{ 
+* @{
 */
 #define BLE_SEC_KDIST_NONE      0            /**< No key needs to be distributed. */
 #define BLE_SEC_KDIST_ENCKEY   (1 << 0)      /**< Distribute encryption and master identification info. */

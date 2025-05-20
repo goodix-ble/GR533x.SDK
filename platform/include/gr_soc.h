@@ -31,12 +31,17 @@ typedef void (*FuncVector_t)(void);
 
 #define SYS_RESET_REASON_NONE          (0U)
 #define SYS_RESET_REASON_AONWDT        (1U << 2U)   //AONWDT reset
+#define SYS_RESET_REASON_FULL          (1U << 3U)
+#define SYS_RESET_REASON_POR           (1U << 4U)
+
 /**
   * @brief  Get chip reset reason.
   *
   * @retval Returned value can be one of the following values:
   *         @arg @ref SYS_RESET_REASON_NONE
   *         @arg @ref SYS_RESET_REASON_AONWDT
+  *         @arg @ref SYS_RESET_REASON_FULL
+  *         @arg @ref SYS_RESET_REASON_POR
   */
 uint8_t sys_device_reset_reason(void);
 

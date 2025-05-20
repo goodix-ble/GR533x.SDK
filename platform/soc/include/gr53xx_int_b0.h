@@ -619,8 +619,8 @@ typedef struct _htable_amcm_regs
 /*******************  Bit definition for TPP_ANA register  *******************/
 #define AON_CTL_TPP_ANA_EN_N_Pos                                (0U)
 #define AON_CTL_TPP_ANA_EN_N_Len                                (1U)
-#define AON_CTL_TPP_ANA_EN_N_Msk                                (0x1U << AON_CTL_TPP_ANA_EN_Pos)
-#define AON_CTL_TPP_ANA_EN_N                                    AON_CTL_TPP_ANA_EN_Msk
+#define AON_CTL_TPP_ANA_EN_N_Msk                                (0x1U << AON_CTL_TPP_ANA_EN_N_Pos)
+#define AON_CTL_TPP_ANA_EN_N                                    AON_CTL_TPP_ANA_EN_N_Msk
 
 #define AON_CTL_TPP_ANA_EN_N_RD_Pos                             (8U)
 #define AON_CTL_TPP_ANA_EN_N_RD_Len                             (1U)

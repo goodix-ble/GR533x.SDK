@@ -104,7 +104,7 @@ typedef struct
     uint16_t offset_ext_1p0;  /* Offset based on interanl reference(1.6V)  */
     uint16_t slope_ext_1p0;   /* Slope based on interanl reference(1.6V)   */
     uint16_t temp;            /* Offset based on interanl reference(0.85V) */
-    uint16_t temp_ref;        /* Chip temperature sensor reference temperature. E.g. Decimal 2618: 26.18°„C */
+    uint16_t temp_ref;        /* Chip temperature sensor reference temperature. E.g. Decimal 2618: 26.18C */
     uint16_t vbat_div;        /* Chip internal resistance voltage ratio. E.g. Decimal 358:3.58 */
     uint8_t  unused;
     uint8_t  cali_mode;       /* ADC calibration mode                      */
@@ -150,6 +150,36 @@ typedef struct {
 } __attribute__ ((packed)) chip_trim1_t;
 
 
+/* EFUSE data struct */
+typedef struct {
+    /* Configurations 1Byte*/
+    uint8_t isp_uart_bypass : 1;   /* 0: Support UART ISP, 1: Not Support UART ISP   */
+    uint8_t isp_jlink_bypass : 1;  /* 0: Support JLINK ISP, 1: Not Support JLINK ISP */
+    uint8_t swd_disable : 1;       /* 0: SWD enable, 1: SWD disable                 */
+    uint8_t io_ldo_adjust_en : 1;  /* IO LDO adjust enable, 0:disable, 1:enable      */
+    uint8_t io_ldo_sel : 1;        /* IO voltage, 0: 1.8v, 1:3.0v                    */
+    uint8_t io_ldo_bypass : 1;     /* 0: no bypass, 1: bypass                        */
+    uint8_t reserved : 2;
+} __attribute__ ((packed)) config_t;
+
+typedef struct
+{
+    uint8_t  uid_fab[3];
+    uint8_t  uid_year;
+    uint8_t  uid_mon;
+    uint8_t  uid_lot_id[8];
+    uint8_t  uid_wafer_id;
+    uint8_t  uid_wafer_x;
+    uint8_t  uid_wafer_y;
+    uint8_t  sram_size;           /* 0: 96KB, 1: 80KB, 2: 64KB, 3: 48KB */
+    uint32_t flash_otp_addr1 : 24;
+    uint32_t flash_otp_addr2 : 24;
+    uint8_t  bod_trim;
+    config_t config;
+    uint8_t  io_ldo_1p8;
+    uint8_t  io_ldo_3p0;
+    uint8_t  user[5];
+} __attribute__ ((packed)) boot_efuse_ctrl_t;
 /** @} */
 #endif
 

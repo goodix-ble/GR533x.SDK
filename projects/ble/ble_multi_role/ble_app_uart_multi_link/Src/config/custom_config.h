@@ -57,6 +57,7 @@
 // <2=> GR5331CENI
 // <3=> GR5332AENE
 // <4=> GR5332CENE
+// <5=> GR5331DEBI
 #ifndef CHIP_TYPE
 #define CHIP_TYPE                        4
 #endif
@@ -168,11 +169,23 @@
 #define SYSTEM_CLOCK                     0
 #endif
 
-// <ol.0..2> System power mode
+// <o> RF TX PA select
+// <1=> BLE_RF_TX_MODE_SPA_MODE  (-20~6 dBm TX power for GR5331/GR5330, -20~5 dBm TX power for GR5332)
+// <2=> BLE_RF_TX_MODE_UPA_MODE  (-15~2 dBm TX power for GR5331/GR5330)
+// <3=> BLE_RF_TX_MODE_HPA_MODE  (-10~15 dBm TX power for GR5332)
+#ifndef RF_TX_PA_SELECT
+#define RF_TX_PA_SELECT                  1
+#endif
+
+// <o> System power mode
 // <0=> DCDC MODE
-// <1=> SYSLDO MODE
+// <1=> SYSLDO MODE(if BLE_RF_TX_MODE_HPA_MODE used, SYSLDO must be used)
 #ifndef SYSTEM_POWER_MODE
+#if (RF_TX_PA_SELECT == 3)
+#define SYSTEM_POWER_MODE                1
+#else
 #define SYSTEM_POWER_MODE                0
+#endif
 #endif
 
 // <o> External clock accuracy used in the LL to compute timing  <1-500>
@@ -185,7 +198,7 @@
 // <0=> Default: Disable internal osc as low power clock
 // <1=> Enable internal osc as low power clock and force CFG_LF_ACCURACY_PPM to 500ppm
 #ifndef CFG_LPCLK_INTERNAL_EN
-#define CFG_LPCLK_INTERNAL_EN            0
+#define CFG_LPCLK_INTERNAL_EN            1
 #endif
 
 // <o> Delay time for Boot startup
@@ -223,14 +236,6 @@
 #define DTM_TEST_ENABLE                  0
 #endif
 
-// <o> RF TX PA select
-// <1=> BLE_RF_TX_MODE_SPA_MODE  (-20~6 dBm TX power for GR5331/GR5330, -20~5 dBm TX power for GR5332)
-// <2=> BLE_RF_TX_MODE_UPA_MODE  (-15~2 dBm TX power for GR5331/GR5330)
-// <3=> BLE_RF_TX_MODE_HPA_MODE  (-10~15 dBm TX power for GR5332)
-#ifndef RF_TX_PA_SELECT
-#define RF_TX_PA_SELECT                  1
-#endif
-
 // <o>  matching circuit configuration
 // <0=> 5th order matching circuit
 // <1=> 3rd order matching circuit
@@ -248,7 +253,8 @@
 // </h>
 
 // <h> BLE resource configuration
-// <i> Note: The total number of BLE Activities(CONNECTIONS+ADVS+SCAN) should not exceed the limit 12.
+// <i> Note: The total number of BLE Activities(CONNECTIONS+2*ADVS+SCAN) should not exceed the limit 12.
+// <i> Note: Stack support max number of activity is 12.
 
 // <o> Support maximum number of BLE profiles <1-64>
 // <i> Range: 1-64
@@ -257,19 +263,20 @@
 #endif
 
 // <o> Support maximum number of bonded devices
+// <i> Note: minimum number is 1
 #ifndef CFG_MAX_BOND_DEVS
 #define CFG_MAX_BOND_DEVS                5
 #endif
 
-// <o> Support maximum number of BLE Links <1-10>
-// <i> Range: 1-10
+// <o> Support maximum number of BLE Links <1-8>
+// <i> Range: 1-8
 #ifndef CFG_MAX_CONNECTIONS
 #define CFG_MAX_CONNECTIONS              7
 #endif
 
-// <o> Support maximum number of BLE Legacy/Extended Advertisings <0-5>
-// <i> Range: 0-5
-// <i> Note: The total number of BLE Legacy/Extended/Periodic Advertisings should not exceed the limit 5.
+// <o> Support maximum number of BLE Legacy/Extended Advertisings <0-4>
+// <i> Range: 0-4
+// <i> Note: The total number of BLE Legacy/Extended/Periodic Advertisings should not exceed the limit 4.
 #ifndef CFG_MAX_ADVS
 #define CFG_MAX_ADVS                     1
 #endif

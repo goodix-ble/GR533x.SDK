@@ -7,10 +7,14 @@
 #define BLE_EM_CUST_CONFIG_SIZE_MAX         (0x235B)
 #define BLE_EM_ACTIVITY_BLOCK_SIZE          (0x120)
 
-#if (CFG_MESH_SUPPORT)
-#define BLE_ACTIVITY_CUST                   (CFG_MAX_CONNECTIONS + 2 + CFG_MAX_SCAN)
-#else
-#define BLE_ACTIVITY_CUST                   (CFG_MAX_CONNECTIONS + CFG_MAX_ADVS + CFG_MAX_SCAN)
+#define BLE_ACTIVITY_CUST                   (CFG_MAX_CONNECTIONS + 2 * CFG_MAX_ADVS + CFG_MAX_SCAN + DTM_TEST_ENABLE)
+
+#if (BLE_ACTIVITY_CUST > 12)   // controller support max number of activity is 12
+#error "custom configuration activity overflow, (CONNECTIONS+2*ADVS+SCAN) should not exceed the limit 12!!!"
+#endif
+
+#if (CFG_MAX_BOND_DEVS == 0)   // minimum number is 1
+#error "custom configuration error, minimum number of CFG_MAX_BOND_DEVS is 1"
 #endif
 
 #if (CFG_MAX_BOND_DEVS > 10)
@@ -20,15 +24,11 @@
 #endif
 
 // <h> BLE EM buffer configuration
-// <o> Support maximum number of BLE adv data buffer Number <0-6>
-// <i> Range: 0-6
+// <o> Support maximum number of BLE adv data buffer Number <0-9>
+// <i> Range: 0-9
 #if (CFG_MAX_ADVS)
 #ifndef BLE_ADV_BUF_NB_CUST
-#if (CFG_MESH_SUPPORT)
-#define BLE_ADV_BUF_NB_CUST                 6
-#else
 #define BLE_ADV_BUF_NB_CUST                 (2 * CFG_MAX_ADVS)
-#endif
 #endif
 #else
 #ifndef BLE_ADV_BUF_NB_CUST
@@ -39,18 +39,14 @@
 // <o> Support maximum number of BLE adv data fragments number <1-5>
 // <i> Range: 1-5
 #ifndef BLE_ADV_FRAG_NB_CUST
-#if (CFG_MESH_SUPPORT)
 #define BLE_ADV_FRAG_NB_CUST                1
-#else
-#define BLE_ADV_FRAG_NB_CUST                1
-#endif
 #endif
 
 #if (BLE_EM_CUST_CONFIG_SIZE_MAX< \
     (BLE_ACTIVITY_CUST * BLE_EM_ACTIVITY_BLOCK_SIZE)+ \
     (BLE_ADV_BUF_NB_CUST*BLE_ADV_FRAG_NB_CUST*254 + BLE_ADV_FRAG_NB_CUST*BLE_ACTIVITY_CUST*16 + 6*BLE_ADV_FRAG_NB_CUST*BLE_ACTIVITY_CUST)+\
     BLE_EM_FREE_ZONE)
-#error "custorm configuration buffer overflow, please reduce the stack or advertising buffer configuration!!!"
+#error "custom configuration buffer overflow, please reduce the stack or advertising buffer configuration!!!"
 #endif
 
 #ifndef CO_ALIGN4_HI

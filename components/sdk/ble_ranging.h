@@ -102,6 +102,22 @@
 #define RANGING_KE_MSG_ALLOC(id, param_str) \
         (param_str *) ble_ranging_ke_msg_alloc(id, sizeof(param_str))
 
+/**
+ ****************************************************************************************
+ * @brief Convenient wrapper to ble_ranging_hci_msg_alloc().
+ *
+ * This macro calls ble_ranging_hci_msg_alloc() and casts the returned pointer to the
+ * appropriate structure. Can only be used if a parameter structure exists for this message.
+ *
+ * @param[in] id        Message identifier. The number of messages is limited to 0xFFFF.
+ * @param[in] param_str Parameter structure type, which shall be a typedef type.
+ *
+ * @return Pointer to the allocated parameter structure.
+ ****************************************************************************************
+ */
+#define RANGING_HCI_MSG_ALLOC(id, param_str) \
+        (struct param_str *) ble_ranging_hci_msg_alloc(id, sizeof(struct param_str))
+
 typedef enum hci_msg_id hci_msg_id_t;
 typedef enum sdk_msg_id sdk_msg_id_t;
 
@@ -123,7 +139,7 @@ typedef uint16_t ra_task_id_t;
  * @param[in] opcode Vendor-specific HCI event or command code.
  * @param[in] p_evt  Pointer to the parameters of the message.
  */
-typedef void (*ble_ranging_evt_handler_t)(hci_msg_id_t msg_id, uint16_t opcode, void const *p_evt);
+typedef int (*ble_ranging_evt_handler_t)(hci_msg_id_t msg_id, uint16_t opcode, void const *p_evt);
 
 /**
  * @brief Handler for the message sent by ble_ranging_ke_msg_send().
@@ -156,6 +172,19 @@ typedef uint32_t (*ble_ranging_get_tick_callback_t)(void);
  * @return Clock frequency.
  */
 typedef uint32_t (*ble_ranging_get_freq_callback_t)(void);
+#endif
+
+#if CFG_CS_SUPPORT
+/**
+ * @brief Callback for dumping CS subevent result.
+ *
+ * @param[in] role CS role.
+ * @param[in] subevt_idx Subevent index in a CS procedure.
+ * @param[in] p_subevt Pointer to subevent result.
+ *
+ * @return Time increment. Unit: 0.01ms.
+ */
+typedef void (*ble_ranging_dump_cs_subevent_result_callback_t)(uint8_t role, uint8_t subevt_idx, cs_subevent_result_all_t *p_subevt);
 #endif
 
 /** @} */
@@ -289,6 +318,17 @@ void ble_ranging_register_evt_handler(ble_ranging_module_id_t module_id, ble_ran
  ****************************************************************************************
  */
 void ble_set_dk_device_info(const ble_dk_dev_info_t *p_dev_info);
+
+#if CFG_CS_HANDOVER_SUPPORT
+/**
+ ****************************************************************************************
+ * @brief Set handover node number.
+ *
+ * @param[in] node_num Number of handover node.
+ ****************************************************************************************
+ */
+void ble_set_handover_node_num(uint8_t node_num);
+#endif
 
 #if CFG_SNIFFER_CLK_SYNC_SUPPORT
 /**
@@ -533,6 +573,32 @@ void *ble_ranging_ke_msg_alloc(sdk_msg_id_t id, uint16_t param_len);
 
 /**
  ****************************************************************************************
+ * @brief Allocate memory for a message which will be sent over HCI (Host Controller Interface).
+ *
+ * This function allocates memory dynamically for a message that needs to be sent over the HCI.
+ * The length of the variable parameter structure must be provided to allocate the correct size.
+ *
+ * Several additional parameters are provided which will be preset in the message and which
+ * may be used internally to choose the kind of memory to allocate.
+ *
+ * The memory allocated will be automatically freed by the kernel after the pointer has been sent
+ * to ble_ranging_hci_msg_send().
+ *
+ * Allocation failure is considered critical and should not happen.
+ *
+ * @param[in] hci_msg_id    HCI message identifier. The HCI message ID allows to identify
+ *                          different types of messages that can be handled by the HCI layer.
+ * @param[in] param_len     Size of the message parameters to be allocated.
+ *
+ * @return Pointer to the parameter member of the HCI message. If the parameter structure is
+ *         empty, the pointer will point to the end of the message and should not be used
+ *         (except to retrieve the message pointer or to send the message).
+ ****************************************************************************************
+ */
+void *ble_ranging_hci_msg_alloc(uint16_t hci_msg_id, uint16_t param_len);
+
+/**
+ ****************************************************************************************
  * @brief Send message to SDK TASK.
  *
  * Send a message previously allocated with ble_ranging_ke_msg_alloc() function.
@@ -568,6 +634,17 @@ uint8_t ble_ranging_get_conidx_by_conhdl(uint16_t conhdl);
  ****************************************************************************************
  */
 uint16_t ble_ranging_get_conhdl_by_conidx(uint8_t conidx);
+
+/**
+ ****************************************************************************************
+ * @brief Send a message to the BLE controller.
+ *
+ * @param[in] p_msg  Pointer to the message that will be sent to the BLE controller.
+ *
+ * @return Void.
+ ****************************************************************************************
+ */
+void ble_ranging_send_to_controller(void *p_msg);
 
 /** @} */
 

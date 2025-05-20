@@ -602,6 +602,7 @@ enum gapc_msg_id
     GAPC_SECURITY_IND                                   = MSG_ID(GAPC, 0x1B),
     GAPC_SIGN_COUNTER_IND                               = MSG_ID(GAPC, 0x1C),
     GAPC_CON_CHANNEL_MAP_IND                            = MSG_ID(GAPC, 0x1D),
+    GAPC_SEC_REQ_TIMEOUT_IND                            = MSG_ID(GAPC, 0x1E),
     GAPC_SET_LE_PING_TO_CMD                             = MSG_ID(GAPC, 0x28),
     GAPC_LE_PING_TO_VAL_IND                             = MSG_ID(GAPC, 0x29),
     GAPC_LE_PING_TO_IND                                 = MSG_ID(GAPC, 0x2A),

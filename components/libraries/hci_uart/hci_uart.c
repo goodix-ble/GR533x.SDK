@@ -42,9 +42,16 @@
 #include "ble.h"
 #include "app_uart.h"
 
+#ifdef DTM_ATE_ENABLE
+#define  HCI_CACHE_BUF_LEN    128
+#define  HCI_UART_TX_BUF_LEN  128
+#define  HCI_UART_RX_BUF_LEN  128
+#else
 #define  HCI_CACHE_BUF_LEN    4096
 #define  HCI_UART_TX_BUF_LEN  4096
 #define  HCI_UART_RX_BUF_LEN  4096
+#endif
+
 
 extern int8_t TX_Power_dbm;
 
@@ -169,5 +176,5 @@ void ble_hci_stack_init_handle(void)
     else                      //DCDC supply,the maximum power is 7 dBm
     {
         TX_Power_dbm = 7;
-    } 
+    }
 }

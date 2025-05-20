@@ -55,6 +55,7 @@ typedef enum
     XO_REQUEST_DEVICE_NUM_BLE = 0,
     XO_REQUEST_DEVICE_NUM_CALIBRATION, //NO.=1
     XO_REQUEST_DEVICE_NUM_DDVS,        //NO.=2
+    XO_REQUEST_DEVICE_NUM_DCDC,
     MAX_XO_REQUEST_DEVICE_NUM
 } xo_request_device_number_t;
 /** @} */

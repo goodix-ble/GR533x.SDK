@@ -528,7 +528,6 @@ static uint8_t app_timer_running_queue_insert(app_timer_t *p_timer_id)
 #if APP_TIMER_TRIGGER_WINDOW_ENABLE
 static uint8_t app_timer_running_queue_trigger_window_mark(void)
 {
-    // todo:
     // 1, pick timer nodes that fall within the trigger window;
     // 2, mark these timers;
     //    1), for repeat node, need mark and adjust next_shot_timer;
@@ -583,7 +582,6 @@ static uint8_t app_timer_running_queue_trigger_window_mark(void)
 
 static uint8_t app_timer_running_queue_trigger_window_execute(void)
 {
-    // todo:
     // 1, check timer node that marked in the app_timer_running_queue_trigger_window_mark();
     // 2, execute the callback;
     // 3, clear mark;

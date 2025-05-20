@@ -97,6 +97,21 @@ typedef enum
     BLE_GAP_ADDR_TYPE_RANDOM_STATIC,   /**< Random static (identity) address. */
 } ble_gap_addr_type_t;
 
+/**
+ * @brief Bit field use to select the preferred TX or RX LE PHY.
+ */
+typedef enum
+{
+    /// No preferred PHY
+    BLE_GAP_PHY_ANY               = 0x00,
+    /// LE 1M PHY preferred for an active link
+    BLE_GAP_PHY_LE_1MBPS          = (1 << 0),
+    /// LE 2M PHY preferred for an active link
+    BLE_GAP_PHY_LE_2MBPS          = (1 << 1),
+    /// LE Coded PHY preferred for an active link
+    BLE_GAP_PHY_LE_CODED          = (1 << 2),
+} ble_gap_phy_bit_t;
+
 /** @brief The phy options */
 typedef enum
 {
@@ -236,12 +251,13 @@ typedef enum
 } ble_gap_iq_report_status_t;
 
 /**
- * @brief Phy for power control management 
+ * @brief Phy for power control management
  */
  typedef enum
 {
     BLE_GAP_PHY_1M       = 0x01,        /**< LE 1M PHY. */
     BLE_GAP_PHY_2M       = 0x02,        /**< LE 2M PHY. */
+    BLE_GAP_PHY_CODED    = 0x03,        /**< LE Coded PHY, used for BLE_GAPC_EVT_PHY_UPDATED. */
     BLE_GAP_PHY_CODED_S8 = 0x03,        /**< LE Coded PHY with S=8 data coding. */
     BLE_GAP_PHY_CODED_S2 = 0x04         /**< LE Coded PHY with S=2 data coding. */
 } ble_gap_phy_type_t;
@@ -812,8 +828,8 @@ typedef struct
 /**@brief PHY update event for @ref BLE_GAPC_EVT_PHY_UPDATED. */
 typedef struct
 {
-    uint8_t     tx_phy;         /**< LE PHY for data transmission. @ref ble_gap_phy_type_t. */
-    uint8_t     rx_phy;         /**< LE PHY for data reception. @ref ble_gap_phy_type_t. */
+    uint8_t     tx_phy;         /**< LE PHY for data transmission. (0x00:1M, 0x01:2M, 0x03:coded) @ref ble_gap_phy_type_t. */
+    uint8_t     rx_phy;         /**< LE PHY for data reception. (0x00:1M, 0x01:2M, 0x03:coded) @ref ble_gap_phy_type_t. */
 } ble_gap_evt_phy_update_t;
 
 /** @brief  Connection complete event for @ref BLE_GAPC_EVT_CONNECTED. */
@@ -896,7 +912,7 @@ typedef struct
 /** @brief Connection IQ Report info event for @ref BLE_GAPC_EVT_CONNECT_IQ_REPORT. */
 typedef struct
 {
-    uint8_t  rx_phy;                              /**< Rx PHY (0x01: 1M | 0x02: 2M), see @ref BLE_GAP_PHYS. */
+    uint8_t  rx_phy;                              /**< Rx PHY (0x01: 1M | 0x02: 2M). */
     uint8_t  data_channel_idx;                    /**< Data channel index, range 0x00 to 0x24. */
     int16_t  rssi;                                /**< RSSI units: 0.1 dBm, range -1270 to +200. */
     uint8_t  rssi_antenna_id;                     /**< RSSI antenna ID. */
@@ -1156,17 +1172,17 @@ uint16_t ble_gap_data_length_update(uint8_t conn_idx,  uint16_t  tx_octects , ui
  ****************************************************************************************
  * @brief Set the PHY preferences for the connection identified by the connection index.
  *
- * @param[in] conn_idx:   The index of connection.
- * @param[in] tx_phys: A bit field that indicates the transmitter PHYs that the Host prefers the Controller to use (see @ref ble_gap_phy_type_t).
- * @param[in] rx_phys: A bit field that indicates the receiver PHYs that the Host prefers the Controller to use (see @ref ble_gap_phy_type_t).
- * @param[in] phy_opt: A bit field that allows the Host to specify options for PHYs (see @ref ble_gap_phy_options_t).
+ * @param[in] conn_idx:  The index of connection.
+ * @param[in] tx_phys:   A bit field that indicates the transmitter PHYs that the Host prefers the Controller to use (see @ref ble_gap_phy_bit_t).
+ * @param[in] rx_phys:   A bit field that indicates the receiver PHYs that the Host prefers the Controller to use (see @ref ble_gap_phy_bit_t).
+ * @param[in] phy_opt:   A bit field that allows the Host to specify options for PHYs (see @ref ble_gap_phy_options_t), only valid for coded phy.
  *
  * @retval ::SDK_SUCCESS: Operation is Success.
  * @retval ::SDK_ERR_INVALID_CONN_IDX: Invalid connection index supplied.
  * @retval ::SDK_ERR_NO_RESOURCES: Not enough resources.
  ****************************************************************************************
  */
-uint16_t ble_gap_phy_update(uint8_t conn_idx, uint8_t tx_phys , uint8_t rx_phys, uint8_t phy_opt);
+uint16_t ble_gap_phy_update(uint8_t conn_idx, uint8_t tx_phys, uint8_t rx_phys, uint8_t phy_opt);
 
 /**
  ****************************************************************************************

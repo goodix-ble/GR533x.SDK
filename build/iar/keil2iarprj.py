@@ -100,6 +100,16 @@ class IARPrjGen():
                             self.src_list_.append(src_str)
                             for Files_node in Group_node.findall("Files"):
                                 for File_node in Files_node.findall("File"):
+                                    file_name = File_node.find("FileName").text.lower()
+                                    # check file is included or not
+                                    file_opt  = File_node.find("FileOption")
+                                    if file_opt :
+                                        cmonProp = file_opt.find("CommonProperty")
+                                        if cmonProp :
+                                            includeInBuild = cmonProp.find("IncludeInBuild")
+                                            if (includeInBuild != None) and (int(includeInBuild.text) == 0) :
+                                                print(">>> Cause of disable build, ignore file " + file_name)
+                                                continue
                                     for FilePath_node in File_node.findall("FilePath"):
                                         src_str = ''
                                         src_str += "<file>\n"
@@ -185,6 +195,7 @@ class IARPrjGen():
         src_list = []
         for str in self.src_list_:
             str = str.replace("keil\\Startup.S", "iar\\startup_gr55xx.s")
+            str = str.replace("app_crypto\\keil\\app_crypto.lib", "app_crypto\\iar\\app_crypto.a")
             src_list.append(str)
 
         all_lines = ewp_handle.readlines()
@@ -245,6 +256,33 @@ class IARICFConfig():
                 self.run_addr_  = addr[1].strip() #special index
         return True
 
+    def update_stack(self):
+        with open('../Src/config/custom_config.h', 'r') as config_file:
+            config_content = config_file.read()
+            system_stack_size_match = re.search(r'#define\s+SYSTEM_STACK_SIZE\s+(0x[0-9A-Fa-f]+|\d+)', config_content)
+            system_heap_size_match = re.search(r'#define\s+SYSTEM_HEAP_SIZE\s+(0x[0-9A-Fa-f]+|\d+)', config_content)
+            if system_stack_size_match:
+                system_stack_size = system_stack_size_match.group(1)
+            else:
+                raise ValueError("SYSTEM_STACK_SIZE not found in custom_config.h")
+            if system_heap_size_match:
+                system_heap_size = system_heap_size_match.group(1)
+            else:
+                raise ValueError("SYSTEM_STACK_SIZE not found in custom_config.h")
+        icf_file_path = '../IAR/gr5332.icf'
+        with open(icf_file_path, 'r') as icf_file:
+            icf_content = icf_file.read()
+        old_stack_value = 'define symbol __ICFEDIT_size_cstack__     = 0x2000'
+        new_stack_value = f'define symbol __ICFEDIT_size_cstack__     = {system_stack_size}'
+        icf_content = icf_content.replace(old_stack_value, new_stack_value)
+        with open(icf_file_path, 'w') as icf_file:
+            icf_file.write(icf_content)
+        old_heap_value = 'define symbol __ICFEDIT_size_heap__       = 0x0000'
+        new_heap_value = f'define symbol __ICFEDIT_size_heap__       = {system_heap_size}'
+        icf_content = icf_content.replace(old_heap_value, new_heap_value)
+        with open(icf_file_path, 'w') as icf_file:
+            icf_file.write(icf_content)
+
     @staticmethod
     def copy_file(src, dst):
         shutil.copy(src, dst)
@@ -291,6 +329,7 @@ def main():
     if not icf.get_config_args():
         return
     if icf.make(G_LDS_FILE):
+        icf.update_stack()
         gen = IARPrjGen(name[0])
         if not gen.copy_file(TEMPALTE_PRJ, "../IAR/"):
             return
